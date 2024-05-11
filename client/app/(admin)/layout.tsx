@@ -1,5 +1,6 @@
-import Footer from "@/components/shared/Footer";
-import Header from "@/components/shared/Header";
+import Footer from '@/components/shared/Footer';
+import Header from '@/components/shared/Header';
+import { UserContext } from '@/global/userContext';
 
 export default function RootLayout({
   children,
@@ -9,7 +10,7 @@ export default function RootLayout({
   return (
     <>
       <Header />
-      <main>{children}</main>
+        <main>{children}</main>
       <Footer />
     </>
   );

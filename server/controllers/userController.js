@@ -180,19 +180,19 @@ const loginUser = asyncHandler(async (req, res) => {
   if (user) {
     return res.json(user);
   } else {
-    return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: 'Invalid username or password' });
   }
 });
 
 module.exports = {
-    getUsers,
-    getUserById,
-    createUser,
-    updateAddress,
-    deleteUser,
-    updateEmail,
-    updateContact,
-    updatePhotograph,
-    updateRole,
-    loginUser,
+  getUsers,
+  getUserById,
+  createUser,
+  updateAddress,
+  deleteUser,
+  updateEmail,
+  updateContact,
+  updatePhotograph,
+  updateRole,
+  loginUser,
 };

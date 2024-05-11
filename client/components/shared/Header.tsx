@@ -1,10 +1,14 @@
-import { DIGITALINDIA } from "@/public";
-import Image from "next/image";
-import Link from "next/link";
-import { IoArrowBackCircleOutline } from "react-icons/io5";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+'use client';
+import { DIGITALINDIA } from '@/public';
+import Image from 'next/image';
+import Link from 'next/link';
+import { IoArrowBackCircleOutline } from 'react-icons/io5';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { useContext } from 'react';
+import { UserContext } from '@/global/userContext';
 
 export default function Header() {
+  const { user } = useContext(UserContext);
   return (
     <header className="p-2">
       <section className="h-20 shadow-lg">
@@ -28,10 +32,12 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex gap-1 items-center">
-          <span className="text-sm">Admin</span>
+          <span className="text-sm">{user?.name}</span>
           <Avatar className="border">
             <AvatarImage src="" />
-            <AvatarFallback>A</AvatarFallback>
+            <AvatarFallback>
+              {user?.name?.charAt(0).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
         </div>
       </section>

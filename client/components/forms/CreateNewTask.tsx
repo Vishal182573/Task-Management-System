@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { IoAddCircle } from "react-icons/io5";
-import Combobox from "../shared/Combobox";
+import Combobox from "../shared/ComboBox";
 import CalendarForm from "../shared/Calender";
 import { Textarea } from "../ui/textarea";
 
