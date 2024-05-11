@@ -12,39 +12,58 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { IoAddCircle } from "react-icons/io5";
+import Combobox from "../shared/Combobox";
+import CalendarForm from "../shared/Calender";
+import { Textarea } from "../ui/textarea";
 
-export default function DialogDemo() {
+export default function CreateNewTask() {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button>
           <IoAddCircle />
-          Add Task
+          &nbsp; Add Task
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
-          </DialogDescription>
+          <DialogTitle>Create New Task</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Name
+              Title
             </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
+            <Input id="name" value="" className="col-span-3" />
+          </div>
+          <div className="">
+            <Label htmlFor="description" className="text-right">
+              Description
+            </Label>
+            <Textarea
+              placeholder="Type your message here."
+              className="w-full"
+            />
+            {/* <Input id="description" value="" className="col-span-3" /> */}
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
+            <Label htmlFor="description" className="text-right">
+              Starting Date
             </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
+            <CalendarForm />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="description" className="text-right">
+              End Date
+            </Label>
+            <CalendarForm />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Combobox />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit">Save changes</Button>
+          <Button type="submit">Create</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
