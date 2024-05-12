@@ -1,10 +1,11 @@
-import CreateNewTask from "@/components/forms/CreateNewTask";
-import { Button } from "@/components/ui/button";
-import { Metadata } from "next";
-import { MdManageAccounts } from "react-icons/md";
+import CreateNewTask from '@/components/forms/CreateNewTask';
+import DashboardTable from '@/components/shared/table';
+import { Button } from '@/components/ui/button';
+import { Metadata } from 'next';
+import { MdManageAccounts } from 'react-icons/md';
 
 export const metadata: Metadata = {
-  title: "Task Management - Dashboard",
+  title: 'Task Management - Dashboard',
 };
 
 export default function page() {
@@ -17,6 +18,7 @@ export default function page() {
         </Button>
         <CreateNewTask />
       </div>
+      <DashboardTable />
     </div>
   );
 }

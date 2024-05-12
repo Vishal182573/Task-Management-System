@@ -46,12 +46,14 @@ const createInstitute = asyncHandler(async (req, res) => {
   }
 
   if (reportingOfficer) {
-    const reportingOfficer = await User.findOne({
+    const foundReportingOfficer = await User.findOne({
       userId: reportingOfficer,
       role: 'reporting',
     });
 
-    if (!reportingOfficer) {
+    console.log(foundReportingOfficer);
+
+    if (!foundReportingOfficer) {
       return res.status(400).json({ message: 'Reporting officer not found' });
     }
   }
@@ -180,6 +182,22 @@ const deleteInstitute = asyncHandler(async (req, res) => {
   const institute = await Institute.findOne({
     name,
   });
+  
+  const nodalOfficer = institute.nodalOfficer;
+  const reportingOfficer = institute.reportingOfficer;
+  
+  if (nodalOfficer) {
+    await User.findOneAndDelete({
+      userId: nodalOfficer,
+    })
+  }
+
+  if (reportingOfficer) {
+    await User.findOneAndDelete({
+      userId: reportingOfficer,
+    })
+  }
+
   if (institute) {
     await institute.remove();
     return res.json({ message: 'Institute removed' });

@@ -35,29 +35,6 @@ function Footer() {
           </div>
           <div className="w-full px-4 lg:w-6/12">
             <div className="items-top mb-6 flex flex-wrap justify-end">
-              {/* <div className="ml-auto w-full px-4 lg:w-4/12">
-                <span className="text-blueGray-500 mb-2 block text-sm font-semibold uppercase">
-                  Useful Links
-                </span>
-                <ul className="list-unstyled">
-                  <li>
-                    <a
-                      href="https://www.creative-tim.com/presentation?ref=njs-profile"
-                      className="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm font-semibold"
-                    >
-                      About Us
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://www.creative-tim.com/bootstrap-themes/free?ref=njs-profile"
-                      className="text-blueGray-600 hover:text-blueGray-800 block pb-2 text-sm font-semibold"
-                    >
-                      Free Products
-                    </a>
-                  </li>
-                </ul>
-              </div> */}
               <div className="w-full px-4 lg:w-4/12">
                 <span className="text-blueGray-500 mb-2 block text-sm font-semibold uppercase">
                   Address
