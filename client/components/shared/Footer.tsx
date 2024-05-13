@@ -1,9 +1,9 @@
-import { DTULOGO } from "@/public";
-import Image from "next/image";
-import { CgWebsite } from "react-icons/cg";
-import { FaLinkedin } from "react-icons/fa6";
+import { DTULOGO } from '@/public';
+import Image from 'next/image';
+import { CgWebsite } from 'react-icons/cg';
+import { FaLinkedin } from 'react-icons/fa6';
 
-import React from "react";
+import React from 'react';
 
 function Footer() {
   return (

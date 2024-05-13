@@ -1,6 +1,6 @@
-import AddInstitute from "@/components/forms/AddInstitute";
-import CommandDemo from "@/components/shared/SelectInstitute";
-import { Button } from "@/components/ui/button";
+import AddInstitute from '@/components/forms/AddInstitute';
+import CommandDemo from '@/components/shared/SelectInstitute';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -8,15 +8,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DELETE, UPDATE } from "@/contants";
-import { Metadata } from "next";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DELETE, UPDATE } from '@/contants';
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Manage Institute",
+  title: 'Manage Institute',
 };
 export default function TabsDemo() {
   return (
