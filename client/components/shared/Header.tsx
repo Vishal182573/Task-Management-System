@@ -1,24 +1,32 @@
-'use client';
-import { DIGITALINDIA } from '@/public';
-import Image from 'next/image';
-import Link from 'next/link';
-import { IoArrowBackCircleOutline } from 'react-icons/io5';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { useContext } from 'react';
-import { UserContext } from '@/global/userContext';
+import { DIGITALINDIA,YEARS75,DELHIGOV} from "@/public";
+import Image from "next/image";
+import Link from "next/link";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function Header() {
-  const { user } = useContext(UserContext);
   return (
     <header className="p-2">
       <section className="h-20 shadow-lg">
-        <figure className="p-2">
+        <figure className="p-2 flex justify-between items-center">
           <Image
             src={DIGITALINDIA}
             alt="digital-india-logo"
             width="180"
             height="100"
           />
+          <div className="py-2 px-8 flex justify-center items-center space-x-2">
+            <Image 
+               src={DELHIGOV}
+               alt="delhi-gov-logo"
+               width="105"
+            />
+            <Image 
+               src={YEARS75}
+               alt="75-years-logo"
+               width="80"
+            />
+          </div>
           <figcaption className="hidden">Digital India Logo</figcaption>
         </figure>
       </section>
@@ -32,12 +40,10 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex gap-1 items-center">
-          <span className="text-sm">{user?.name}</span>
+          <span className="text-sm">Admin</span>
           <Avatar className="border">
             <AvatarImage src="" />
-            <AvatarFallback>
-              {user?.name?.charAt(0).toUpperCase()}
-            </AvatarFallback>
+            <AvatarFallback>A</AvatarFallback>
           </Avatar>
         </div>
       </section>
