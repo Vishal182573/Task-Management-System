@@ -1,5 +1,5 @@
-const express = require('express');
-const {
+import { Router } from "express";
+import {
   getUsers,
   getUserById,
   createUser,
@@ -10,21 +10,25 @@ const {
   updatePhotograph,
   updateRole,
   loginUser,
-} = require('../controllers/userController');
-const router = express.Router();
+  getCurrentUser,
+  updateUser,
+} from "../controllers/userController.js";
+const router = Router();
 
-router.get('/', getUsers);
-router.get('/getUserById', getUserById);
+router.get("/", getUsers);
+router.post("/getCurrentUser", getCurrentUser); // TODO: convert into get request
+router.get("/getUserById", getUserById);
 
-router.post('/', createUser);
-router.post('/login', loginUser);
+router.post("/", createUser);
+router.post("/login", loginUser);
 
-router.put('/updateAddress', updateAddress);
-router.put('/updateEmail', updateEmail);
-router.put('/updateContact', updateContact);
-router.put('/updatePhotograph', updatePhotograph);
-router.put('/updateRole', updateRole);
+router.put("/", updateUser);
+router.put("/updateAddress", updateAddress);
+router.put("/updateEmail", updateEmail);
+router.put("/updateContact", updateContact);
+router.put("/updatePhotograph", updatePhotograph);
+router.put("/updateRole", updateRole);
 
-router.delete('/', deleteUser);
+router.delete("/", deleteUser);
 
-module.exports = router;
+export default router;

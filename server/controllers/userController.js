@@ -1,17 +1,36 @@
-const asyncHandler = require('express-async-handler');
-const User = require('../models/userModel');
-const Institute = require('../models/instituteModel');
-const Task = require('../models/taskModel');
+import asyncHandler from "express-async-handler";
+import User from "../models/userModel.js";
+// import Institute from "../models/instituteModel";
+// import Task from "../models/taskModel";
 
 const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find({});
   return res.json(users);
 });
 
+// TODO: secure it
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+  const user = await User.findOne({
+    email,
+  });
+
+  if (user) {
+    return res.json(user);
+  } else {
+    return res.status(404).json({ message: "User not found" });
+  }
+});
+
 const getUserById = asyncHandler(async (req, res) => {
-  const { userId } = req.body;
+  // const { userId } = req.body;
+  const { userId } = req.query;
+
   if (!userId) {
-    return res.status(400).json({ message: 'User ID is required' });
+    return res.status(400).json({ message: "User ID is required" });
   }
   const user = await User.findOne({
     userId,
@@ -19,24 +38,25 @@ const getUserById = asyncHandler(async (req, res) => {
   if (user) {
     return res.json(user);
   } else {
-    return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: "User not found" });
   }
 });
 
 const createUser = asyncHandler(async (req, res) => {
-  const { name, email, password, role, address, contact, photograph } =
+  const { name, email, password, role, contact, workingAddress, photograph } =
     req.body;
+
   if (!name || !email || !password || !role) {
     return res
       .status(400)
-      .json({ message: 'Atleast Name, Email, Password and Role are required' });
+      .json({ message: "Atleast Name, Email, Password and Role are required" });
   }
   const userExists = await User.findOne({
     email,
   });
 
   if (userExists) {
-    return res.status(400).json({ message: 'User already exists' });
+    return res.status(400).json({ message: "User already exists" });
   }
   const userId = `U-${Math.floor(1000 + Math.random() * 9000)}`;
   const user = new User({
@@ -45,12 +65,43 @@ const createUser = asyncHandler(async (req, res) => {
     email,
     password,
     role,
-    address: address.toString() || null,
     contact: contact.toString() || null,
-    photographUri: photograph || null,
   });
   const createdUser = await user.save();
-  return res.status(201).json(createdUser);
+  return res.status(201).json(createdUser.userId);
+});
+
+const updateUser = asyncHandler(async (req, res) => {
+  const {
+    userId,
+    name,
+    email,
+    role,
+    contact,
+    workingAddress,
+    password,
+    photograph,
+  } = req.body;
+  if (!name || !email || !password || !role) {
+    return res
+      .status(400)
+      .json({ message: "Atleast Name, Email, Password and Role are required" });
+  }
+  const user = await User.findOne({
+    userId,
+  });
+
+  if (user) {
+    user.name = name;
+    user.email = email;
+    user.contact = contact;
+    user.photographUri = photograph;
+
+    const updatedUser = await user.save();
+    return res.json(updatedUser);
+  } else {
+    return res.status(404).json({ message: "User not found" });
+  }
 });
 
 const updateAddress = asyncHandler(async (req, res) => {
@@ -58,7 +109,7 @@ const updateAddress = asyncHandler(async (req, res) => {
   if (!userId || !address) {
     return res
       .status(400)
-      .json({ message: 'User ID and Address are required' });
+      .json({ message: "User ID and Address are required" });
   }
   const user = await User.findOne({
     userId,
@@ -68,30 +119,30 @@ const updateAddress = asyncHandler(async (req, res) => {
     const updatedUser = await user.save();
     return res.json(updatedUser);
   } else {
-    return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: "User not found" });
   }
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
   const { userId } = req.body;
   if (!userId) {
-    return res.status(400).json({ message: 'User ID is required' });
+    return res.status(400).json({ message: "User ID is required" });
   }
   const user = await User.findOne({
     userId,
   });
   if (user) {
     await user.remove();
-    return res.json({ message: 'User removed' });
+    return res.json({ message: "User removed" });
   } else {
-    return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: "User not found" });
   }
 });
 
 const updateEmail = asyncHandler(async (req, res) => {
   const { userId, email } = req.body;
   if (!userId || !email) {
-    return res.status(400).json({ message: 'User ID and Email are required' });
+    return res.status(400).json({ message: "User ID and Email are required" });
   }
   const user = await User.findOne({
     userId,
@@ -101,7 +152,7 @@ const updateEmail = asyncHandler(async (req, res) => {
     const updatedUser = await user.save();
     return res.json(updatedUser);
   } else {
-    return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: "User not found" });
   }
 });
 
@@ -110,7 +161,7 @@ const updateContact = asyncHandler(async (req, res) => {
   if (!userId || !contact) {
     return res
       .status(400)
-      .json({ message: 'User ID and Contact are required' });
+      .json({ message: "User ID and Contact are required" });
   }
   const user = await User.findOne({
     userId,
@@ -120,7 +171,7 @@ const updateContact = asyncHandler(async (req, res) => {
     const updatedUser = await user.save();
     return res.json(updatedUser);
   } else {
-    return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: "User not found" });
   }
 });
 
@@ -129,7 +180,7 @@ const updatePhotograph = asyncHandler(async (req, res) => {
   if (!userId || !photograph) {
     return res
       .status(400)
-      .json({ message: 'User ID and Photograph are required' });
+      .json({ message: "User ID and Photograph are required" });
   }
   const user = await User.findOne({
     userId,
@@ -139,39 +190,39 @@ const updatePhotograph = asyncHandler(async (req, res) => {
     const updatedUser = await user.save();
     return res.json(updatedUser);
   } else {
-    return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: "User not found" });
   }
 });
 
 const updateRole = asyncHandler(async (req, res) => {
   const { userId, role } = req.body;
   if (!userId || !role) {
-    return res.status(400).json({ message: 'User ID and Role are required' });
+    return res.status(400).json({ message: "User ID and Role are required" });
   }
   const user = await User.findOne({
     userId,
   });
   if (user) {
     if (
-      role !== 'admin' ||
-      role !== 'lg' ||
-      role !== 'nodal' ||
-      role !== 'reporting'
+      role !== "admin" ||
+      role !== "lg" ||
+      role !== "nodal" ||
+      role !== "reporting"
     ) {
-      return res.status(400).json({ message: 'Invalid Role' });
+      return res.status(400).json({ message: "Invalid Role" });
     }
     user.role = role;
     const updatedUser = await user.save();
     return res.json(updatedUser);
   } else {
-    return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: "User not found" });
   }
 });
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(400).json({ message: 'Email and Password are required' });
+    return res.status(400).json({ message: "Email and Password are required" });
   }
   const user = await User.findOne({
     email,
@@ -180,11 +231,11 @@ const loginUser = asyncHandler(async (req, res) => {
   if (user) {
     return res.json(user);
   } else {
-    return res.status(404).json({ message: 'Invalid username or password' });
+    return res.status(404).json({ message: "Invalid username or password" });
   }
 });
 
-module.exports = {
+export {
   getUsers,
   getUserById,
   createUser,
@@ -195,4 +246,6 @@ module.exports = {
   updatePhotograph,
   updateRole,
   loginUser,
+  getCurrentUser,
+  updateUser,
 };

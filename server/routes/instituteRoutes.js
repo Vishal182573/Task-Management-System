@@ -1,5 +1,5 @@
-const express = require('express');
-const {
+import { Router } from "express";
+import {
   getInstitutes,
   getInstituteById,
   createInstitute,
@@ -8,19 +8,21 @@ const {
   addTaskToInstitute,
   updateLogo,
   deleteInstitute,
-} = require('../controllers/instituteController');
-const router = express.Router();
+  updateInstitute,
+} from "../controllers/instituteController.js";
+const router = Router();
 
-router.get('/', getInstitutes);
-router.get('/getInstituteById', getInstituteById);
+router.get("/", getInstitutes);
+router.get("/getInstituteById", getInstituteById);
 
-router.post('/', createInstitute);
-router.post('/addTask', addTaskToInstitute);
+router.post("/", createInstitute);
+router.post("/addTask", addTaskToInstitute);
 
-router.put('/assignReportingOfficer', assignReportingOfficer);
-router.put('/assignNodalOfficer', assignNodalOfficer);
-router.put('/updateLogo', updateLogo);
+router.put("/", updateInstitute);
+router.put("/assignReportingOfficer", assignReportingOfficer);
+router.put("/assignNodalOfficer", assignNodalOfficer);
+router.put("/updateLogo", updateLogo);
 
-router.delete('/', deleteInstitute);
+router.delete("/", deleteInstitute);
 
-module.exports = router;
+export default router;

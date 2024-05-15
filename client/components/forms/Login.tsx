@@ -1,61 +1,59 @@
-'use client';
-import { Button } from '@/components/ui/button';
+"use client";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { UserContext, UserType } from '@/global/userContext';
-import React from 'react';
-import { useRouter } from 'next/navigation';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { UserType, useUserContext } from "@/global/userContext";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { login } from "@/lib/api";
 
 const LoginForm = () => {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const userContext = React.useContext(UserContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { setUser } = useUserContext();
   const router = useRouter();
 
-  const handleSubmit = () => {
-    fetch('http://localhost:3001/api/user/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((data) => {
-          const userData: UserType = {
-            userId: data.userId,
-            name: data.name,
-            email: data.email,
-            role: data.role,
-            address: data.address,
-            contact: data.contact,
-            photoGraphUri: data.photoGraphUri,
-            createdAt: data.createdAt,
-          };
+  const handleSubmit = async () => {
+    const res = await login({ email, password });
 
-          userContext.setUser(userData);
-          router.push('/dashboard');
-        });
-      } else if (res.status == 404) {
-        res.json().then((data) => {
-          alert(data.message);
-          return;
-        });
-      }
-    });
+    if (res.ok) {
+      res.json().then((data) => {
+        const userData: UserType = {
+          userId: data.userId,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          address: data.address,
+          contact: data.contact,
+          photoGraphUri: data.photoGraphUri,
+          createdAt: data.createdAt,
+        };
+
+        setUser(userData);
+
+        // TODO: do not use localstorage
+        localStorage.setItem("user", JSON.stringify(userData));
+        router.push("/dashboard");
+      });
+    } else if (res.status == 404) {
+      res.json().then((data) => {
+        alert(data.message);
+        return;
+      });
+    }
   };
 
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Enter Credentials</CardTitle>
+        <CardTitle className="text-2xl">Login</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="grid gap-2">
