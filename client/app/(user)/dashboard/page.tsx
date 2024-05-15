@@ -8,10 +8,10 @@ import { useUserContext } from "@/global/userContext";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { MdManageAccounts } from "react-icons/md";
+import { Metadata } from "next";
 
-// TODO
 // export const metadata: Metadata = {
-//   t  itle: "Task Management - Dashboard",
+//   title: "Task Management - Dashboard",
 // };
 
 export default function page() {
