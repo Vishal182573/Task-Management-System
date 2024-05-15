@@ -1,45 +1,46 @@
-const { constants } = require('../constant');
+import { constants } from "../constant.js";
+
 const errorHandler = (err, req, res, next) => {
   const statusCode = res.statusCode ? res.statusCode : constants.SERVER_ERROR;
   switch (statusCode) {
     case constants.VALIDATION_ERROR:
       res.json({
-        title: 'Validation Error',
+        title: "Validation Error",
         message: err.message,
         stackTrace: err.stack,
       });
       break;
     case constants.NOT_FOUND:
       res.json({
-        title: 'Not Found',
+        title: "Not Found",
         message: err.message,
         stackTrace: err.stack,
       });
       break;
     case constants.FORBIDDEN:
       res.json({
-        title: 'Forbidden',
+        title: "Forbidden",
         message: err.message,
         stackTrace: err.stack,
       });
       break;
     case constants.UNAUTHORIZED:
       res.json({
-        title: 'Unauthorized',
+        title: "Unauthorized",
         message: err.message,
         stackTrace: err.stack,
       });
       break;
     case constants.SERVER_ERROR:
       res.json({
-        title: 'Server Error',
+        title: "Server Error",
         message: err.message,
         stackTrace: err.stack,
       });
       break;
     default:
-      console.log('No Errors, All Good!');
+      console.log("No Errors, All Good!");
       break;
   }
 };
-module.exports = errorHandler;
+export default errorHandler;

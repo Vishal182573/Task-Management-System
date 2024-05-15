@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const instituteSchema = new mongoose.Schema({
+import { Schema, model } from "mongoose";
+const instituteSchema = new Schema({
   name: {
     type: String,
     unique: true,
@@ -22,4 +22,4 @@ const instituteSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Institute', instituteSchema);
+export default model("Institute", instituteSchema);

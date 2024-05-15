@@ -1,5 +1,5 @@
-'use client';
-import React, { useEffect } from 'react';
+"use client";
+import { useEffect, useState } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -10,7 +10,7 @@ import {
   ColumnFiltersState,
   getPaginationRowModel,
   getFilteredRowModel,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -18,17 +18,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/table";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
+import Link from "next/link";
+import { getAllTasks } from "@/lib/api";
+import { calculateDelay } from "@/lib/utils";
 
 export type Task = {
   _id: string;
@@ -46,20 +49,30 @@ export type Task = {
 
 export const columns: ColumnDef<Task>[] = [
   {
-    accessorKey: 'assignedTo',
-    header: 'Institute',
+    accessorKey: "assignedTo",
+    header: "Institute",
   },
   {
-    accessorKey: 'taskId',
-    header: 'Task ID',
+    accessorKey: "taskId",
+    header: "Task ID",
+    cell: ({ row }) => {
+      return (
+        <Link
+          href={`/view-task/${row.original.taskId}`}
+          className="text-blue-500"
+        >
+          {row.original.taskId}
+        </Link>
+      );
+    },
   },
   {
-    accessorKey: 'title',
+    accessorKey: "title",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Title
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -68,12 +81,12 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: 'status',
+    accessorKey: "status",
     header: ({ column }) => {
       return (
         <Select
           onValueChange={(value) => {
-            if (value === 'all') {
+            if (value === "all") {
               column.setFilterValue(undefined);
             } else {
               column.setFilterValue(value);
@@ -94,12 +107,12 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: 'startingDate',
+    accessorKey: "startingDate",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Starting Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -112,12 +125,12 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: 'endingDate',
+    accessorKey: "endingDate",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Ending Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -130,8 +143,8 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: 'delay',
-    header: 'Time Exceeded',
+    accessorKey: "delay",
+    header: "Time Exceeded",
   },
 ];
 
@@ -144,10 +157,8 @@ function DataTable<TData, TValue>({
   columns,
   data,
 }: DashboardTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
     data,
@@ -170,10 +181,10 @@ function DataTable<TData, TValue>({
         <Input
           placeholder="Search by institute"
           value={
-            (table.getColumn('assignedTo')?.getFilterValue() as string) ?? ''
+            (table.getColumn("assignedTo")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn('assignedTo')?.setFilterValue(event.target.value)
+            table.getColumn("assignedTo")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -203,7 +214,7 @@ function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -251,36 +262,24 @@ function DataTable<TData, TValue>({
 }
 
 const DashboardTable = () => {
-  const [tasks, setTasks] = React.useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:3001/api/task');
-        const data = await response.json();
-        const taskWithData = data.map((task: any) => {
-          return {
-            ...task,
-            delay: calculateDelay(task.endingDate),
-          };
-        });
-        setTasks(taskWithData);
-      } catch (error) {
-        console.error(error);
-      }
+      const data = await getAllTasks();
+
+      const taskWithData = data.map((task: any) => {
+        return {
+          ...task,
+          delay: calculateDelay(task.endingDate),
+        };
+      });
+
+      setTasks(taskWithData);
     };
     fetchData();
   });
-  function calculateDelay(endingDate: string) {
-    const endDate = new Date(endingDate);
-    const currentDate = new Date();
-    if (currentDate > endDate) {
-      const differenceMs = currentDate.getTime() - endDate.getTime();
-      const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
-      return differenceDays.toString();
-    } else {
-      return '-';
-    }
-  }
+
   return (
     <div className="container mx-auto py-10">
       <DataTable columns={columns} data={tasks} />
