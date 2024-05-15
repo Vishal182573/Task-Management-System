@@ -396,3 +396,6 @@ export const addComment = async (
     throw new Error(error); // Rethrow the error for handling in the calling code
   }
 };
+
+export const getAllNotifications = async () => {};
+export const getNotificationsByInstitute = async () => {};

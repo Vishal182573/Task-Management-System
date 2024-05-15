@@ -20,7 +20,7 @@ export default function CalendarComponent({
 }: {
   defaultDate: Date | undefined;
   handler: (date: Date | undefined) => void;
-  className: string;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const dateHandler = (date: Date | undefined) => {

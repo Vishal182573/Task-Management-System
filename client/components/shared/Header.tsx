@@ -15,6 +15,7 @@ import Link from "next/link";
 import { logout } from "@/lib/api";
 import { useState } from "react";
 import { RouteNameformatter } from "@/lib/utils";
+import { Badge } from "../ui/badge";
 
 export default function Header() {
   const path = usePathname();
@@ -50,7 +51,12 @@ export default function Header() {
         </div>
         <div className="flex gap-8 items-center justify-between relative">
           <Link className="mt-1" href="/notifications">
-            {true ? <IoNotifications /> : <MdNotificationAdd />}
+            <div className="relative">
+              <IoNotifications />{" "}
+              {true && (
+                <Badge className="rounded-full absolute -top-1 -right-0.5 p-0.5 bg-black"></Badge>
+              )}
+            </div>
           </Link>
           <div className="flex gap-1 items-center">
             <span className="text-sm">{user?.name}</span>
