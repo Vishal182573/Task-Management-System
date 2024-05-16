@@ -255,6 +255,47 @@ const requestExtension = asyncHandler(async (req, res) => {
   }
 });
 
+const updateTask = asyncHandler(async (req, res) => {
+  const {
+    taskId,
+    title,
+    description,
+    assignedTo,
+    status,
+    startingDate,
+    endingDate,
+  } = req.body;
+
+  if (
+    !taskId ||
+    !title ||
+    !description ||
+    !assignedTo ||
+    !status ||
+    !startingDate ||
+    !endingDate
+  ) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const task = await Task.findOne({ taskId });
+
+  if (!task) {
+    return res.status(404).json({ message: 'Task not found' });
+  }
+
+  task.title = title;
+  task.description = description;
+  task.assignedTo = assignedTo;
+  task.status = status;
+  task.startingDate = new Date(startingDate);
+  task.endingDate = new Date(endingDate);
+
+  const updatedTask = await task.save();
+
+  res.status(200).json(updatedTask);
+});
+
 export {
   getTasks,
   getTaskById,
@@ -268,4 +309,5 @@ export {
   approveRequestExtension,
   rejectRequestExtension,
   requestExtension,
+  updateTask,
 };
