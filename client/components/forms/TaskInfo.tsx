@@ -24,14 +24,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
-import { getTaskById } from "@/lib/api";
+import { getTaskById, updateTask } from "@/lib/api";
 import { useUserContext } from "@/global/userContext";
-import { ADMIN, OFFICER } from "@/global/constant";
+import { ADMIN, OFFICER ,LG} from "@/global/constant";
 import ConfirmationDialog from "../shared/ConfirmationDialog";
+
 
 export default function TaskInformation({ taskId }: { taskId: string }) {
   const { user } = useUserContext();
   const [askDelete, setAskDelete] = useState(false);
+  const [update,setUpdate] = useState("hidden");
   const [taskInfo, setTaskInfo] = useState({
     title: "",
     description: "",
@@ -54,7 +56,9 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
     setAskDelete(false);
   };
   const HandleDelete = () => {};
-
+  const HandleUpdate = ()=>{
+    
+  };
   return (
     <div className="w-full py-8 px-24 shadow-sm mt-10 border rounded-md min-h-[500px]">
       <div className=" w-full grid grid-cols-8 gap-x-24 items-center gap-y-4">
@@ -67,6 +71,8 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
           placeholder=""
           className="rounded-sm w-[412px] col-span-3"
           value={taskInfo?.title}
+          disabled={user?.role === 'LG'}
+          onChange={(e) => {setTaskInfo({ ...taskInfo, title: e.target.value }); setUpdate("block")}}
         />
         <div className="grid grid-cols-3 items-center justify-self-end gap-y-2 gap-x-8 col-span-4">
           <Label htmlFor="assignee" className="col-span-1 font-semibold">
@@ -77,6 +83,7 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
               className={`col-span-2 ${cn(
                 buttonVariants({ variant: "outline" })
               )}`}
+              disabled={user?.role === 'LG'}
             >
               {taskInfo?.status}
             </DropdownMenuTrigger>
@@ -104,6 +111,8 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
         <Textarea
           className="resize-none h-20 w-[412px] rounded-sm  col-span-3"
           value={taskInfo.description}
+          disabled={user?.role === 'LG'}
+          onChange={(e) => {setTaskInfo({ ...taskInfo, description: e.target.value }); setUpdate("block")}}
         />
         <div className="col-span-4"></div>
         <Label
@@ -175,7 +184,7 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
           <Button variant="destructive" onClick={() => setAskDelete(true)}>
             Delete
           </Button>
-          <Button className="w-24">Update</Button>
+          <Button className={`w-24 ${update}`} onClick={HandleUpdate}>Update</Button>
         </div>
       )}
     </div>

@@ -6,3 +6,4 @@ export const DELAYED = "DELAYED";
 
 export const ADMIN = "ADMIN";
 export const OFFICER = "OFFICER";
+export const LG = "LG";
