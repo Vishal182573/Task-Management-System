@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 const notificationSchema = new Schema({
-  notificationId: {
+  taskId: {
     type: String,
     unique: true,
   },
@@ -11,6 +11,12 @@ const notificationSchema = new Schema({
     type: String,
   },
   status: {
+    type: String,
+  },
+  type: {
+    type: String,
+  },
+  institute: {
     type: String,
   },
   isRead: {

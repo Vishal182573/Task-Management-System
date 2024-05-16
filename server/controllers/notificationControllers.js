@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Notification from '../models/notificationModel.js';
+import Institute from '../models/instituteModel.js';
 
 const getAllNotifications = asyncHandler(async (req, res) => {
   const notifications = await Notification.find({});
@@ -22,24 +23,26 @@ const getNotificationById = asyncHandler(async (req, res) => {
   }
 });
 
-const createNotification = asyncHandler(async (req, res) => {
-  const { title, description, status } = req.body;
+const getNotificationsByInstitute = asyncHandler(async (req, res) => {
+  const { institute } = req.body;
 
-  if (!title || !description || !status) {
-    return res.status(400).json({ message: 'All fields are required' });
+  if (!institute) {
+    return res.status(400).json({ message: 'Institute name is required' });
   }
 
-  const notificationId = `N-${Math.floor(1000 + Math.random() * 9000)}`;
-
-  const notification = new Notification({
-    notificationId,
-    title,
-    description,
-    status,
+  const instituteExists = await Institute.findOne({
+    name: institute,
   });
 
-  await notification.save();
-  return res.json(notification);
+  if (!instituteExists) {
+    return res.status(404).json({ message: 'Institute not found' });
+  }
+
+  const notifications = await Notification.find({
+    institute,
+  });
+
+  return res.json(notifications);
 });
 
-export { getAllNotifications, getNotificationById, createNotification };
+export { getAllNotifications, getNotificationById, getNotificationsByInstitute };

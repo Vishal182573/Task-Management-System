@@ -1,6 +1,7 @@
-import asyncHandler from "express-async-handler";
-import Institute from "../models/instituteModel.js";
-import Task from "../models/taskModel.js";
+import asyncHandler from 'express-async-handler';
+import Institute from '../models/instituteModel.js';
+import Task from '../models/taskModel.js';
+import Notification from '../models/notificationModel.js';
 
 const getTasks = asyncHandler(async (req, res) => {
   const tasks = await Task.find({});
@@ -12,7 +13,7 @@ const getTaskById = asyncHandler(async (req, res) => {
   const taskId = req.query.id;
 
   if (!taskId) {
-    return res.status(400).json({ message: "Task ID is required" });
+    return res.status(400).json({ message: 'Task ID is required' });
   }
   const task = await Task.findOne({
     taskId,
@@ -20,7 +21,7 @@ const getTaskById = asyncHandler(async (req, res) => {
   if (task) {
     return res.json(task);
   } else {
-    return res.status(404).json({ message: "Task not found" });
+    return res.status(404).json({ message: 'Task not found' });
   }
 });
 
@@ -36,7 +37,7 @@ const createTask = asyncHandler(async (req, res) => {
     !startingDate ||
     !endingDate
   ) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: 'All fields are required' });
   }
 
   const taskId = `T-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -46,7 +47,7 @@ const createTask = asyncHandler(async (req, res) => {
   });
 
   if (!assignedInstitute) {
-    return res.status(400).json({ message: "Institute not found" });
+    return res.status(400).json({ message: 'Institute not found' });
   }
 
   const task = new Task({
@@ -66,7 +67,7 @@ const createTask = asyncHandler(async (req, res) => {
 const updateTaskStatus = asyncHandler(async (req, res) => {
   const { taskId, status } = req.body;
   if (!taskId || !status) {
-    return res.status(400).json({ message: "Task ID and Status are required" });
+    return res.status(400).json({ message: 'Task ID and Status are required' });
   }
   const task = await Task.findOne({
     taskId,
@@ -76,7 +77,7 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
     const updatedTask = await task.save();
     return res.json(updatedTask);
   } else {
-    return res.status(404).json({ message: "Task not found" });
+    return res.status(404).json({ message: 'Task not found' });
   }
 });
 
@@ -85,7 +86,7 @@ const updateTaskAssignedTo = asyncHandler(async (req, res) => {
   if (!taskId || !assignedTo) {
     return res
       .status(400)
-      .json({ message: "Task ID and Assigned To are required" });
+      .json({ message: 'Task ID and Assigned To are required' });
   }
   const task = await Task.findOne({
     taskId,
@@ -95,13 +96,13 @@ const updateTaskAssignedTo = asyncHandler(async (req, res) => {
       name: assignedTo,
     });
     if (!instituteExists) {
-      return res.status(400).json({ message: "Institute not found" });
+      return res.status(400).json({ message: 'Institute not found' });
     }
     task.assignedTo = assignedTo;
     const updatedTask = await task.save();
     return res.json(updatedTask);
   } else {
-    return res.status(404).json({ message: "Task not found" });
+    return res.status(404).json({ message: 'Task not found' });
   }
 });
 
@@ -110,7 +111,7 @@ const updateTaskEndingDate = asyncHandler(async (req, res) => {
   if (!taskId || !endingDate) {
     return res
       .status(400)
-      .json({ message: "Task ID and Ending Date are required" });
+      .json({ message: 'Task ID and Ending Date are required' });
   }
   const task = await Task.findOne({
     taskId,
@@ -120,30 +121,30 @@ const updateTaskEndingDate = asyncHandler(async (req, res) => {
     const updatedTask = await task.save();
     return res.json(updatedTask);
   } else {
-    return res.status(404).json({ message: "Task not found" });
+    return res.status(404).json({ message: 'Task not found' });
   }
 });
 
 const deleteTask = asyncHandler(async (req, res) => {
   const { taskId } = req.body;
   if (!taskId) {
-    return res.status(400).json({ message: "Task ID is required" });
+    return res.status(400).json({ message: 'Task ID is required' });
   }
   const task = await Task.findOne({
     taskId,
   });
   if (task) {
     await task.remove();
-    return res.json({ message: "Task removed" });
+    return res.json({ message: 'Task removed' });
   } else {
-    return res.status(404).json({ message: "Task not found" });
+    return res.status(404).json({ message: 'Task not found' });
   }
 });
 
 const updateTaskTitle = asyncHandler(async (req, res) => {
   const { taskId, title } = req.body;
   if (!taskId || !title) {
-    return res.status(400).json({ message: "Task ID and Title are required" });
+    return res.status(400).json({ message: 'Task ID and Title are required' });
   }
   const task = await Task.findOne({
     taskId,
@@ -153,7 +154,7 @@ const updateTaskTitle = asyncHandler(async (req, res) => {
     const updatedTask = await task.save();
     return res.json(updatedTask);
   } else {
-    return res.status(404).json({ message: "Task not found" });
+    return res.status(404).json({ message: 'Task not found' });
   }
 });
 
@@ -162,7 +163,7 @@ const updateTaskDescription = asyncHandler(async (req, res) => {
   if (!taskId || !description) {
     return res
       .status(400)
-      .json({ message: "Task ID and Description are required" });
+      .json({ message: 'Task ID and Description are required' });
   }
   const task = await Task.findOne({
     taskId,
@@ -172,7 +173,81 @@ const updateTaskDescription = asyncHandler(async (req, res) => {
     const updatedTask = await task.save();
     return res.json(updatedTask);
   } else {
-    return res.status(404).json({ message: "Task not found" });
+    return res.status(404).json({ message: 'Task not found' });
+  }
+});
+
+const approveRequestExtension = asyncHandler(async (req, res) => {
+  const { taskId, days } = req.body;
+  if (!taskId || !days) {
+    return res.status(400).json({ message: 'Task ID and Days are required' });
+  }
+  const task = await Task.findOne({
+    taskId,
+  });
+  if (task) {
+    task.endingDate.setDate(task.endingDate.getDate() + days);
+    const updatedTask = await task.save();
+    const notification = new Notification({
+      title: 'Task Extension Approved',
+      description: `Your request for extension of task ${task.taskId} has been approved`,
+      status: 'Approved',
+      type: 'Answer',
+      nodalOfficer: task.assignedTo,
+      taskId: task.taskId,
+    });
+    await notification.save();
+    return res.json(updatedTask);
+  } else {
+    return res.status(404).json({ message: 'Task not found' });
+  }
+});
+
+const rejectRequestExtension = asyncHandler(async (req, res) => {
+  const { taskId } = req.body;
+  if (!taskId) {
+    return res.status(400).json({ message: 'Task ID is required' });
+  }
+  const task = await Task.findOne({
+    taskId,
+  });
+  if (task) {
+    Notification.create({
+      title: 'Task Extension Rejected',
+      description: `Your request for extension of task ${task.taskId} has been rejected`,
+      status: 'Rejected',
+      type: 'Answer',
+      institute: task.assignedTo,
+      taskId: task.taskId,
+    });
+  } else {
+    return res.status(404).json({ message: 'Task not found' });
+  }
+});
+
+const requestExtension = asyncHandler(async (req, res) => {
+  const { taskId, days } = req.body;
+  if (!taskId || !days) {
+    return res.status(400).json({ message: 'Task ID and Days are required' });
+  }
+
+  const task = await Task.findOne({
+    taskId,
+  });
+
+  if (task) {
+    const notification = new Notification({
+      title: 'Task Extension Request',
+      description: `Request for extension of task ${task.taskId} by ${days} days`,
+      status: 'Pending',
+      type: 'Request',
+      institute: task.assignedTo,
+      taskId: task.taskId,
+    });
+    await notification.save();
+    return res.json(notification);
+  } else {
+    return res.status(404).json({ message: 'Task not found' });
   }
 });
 
@@ -186,4 +261,7 @@ export {
   deleteTask,
   updateTaskTitle,
   updateTaskDescription,
+  approveRequestExtension,
+  rejectRequestExtension,
+  requestExtension,
 };

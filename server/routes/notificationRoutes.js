@@ -1,12 +1,16 @@
 import { Router } from 'express';
 const router = Router();
 
-import { getAllNotifications, getNotificationById, createNotification } from '../controllers/notificationControllers.js';
+import {
+  getAllNotifications,
+  getNotificationById,
+  getNotificationsByInstitute,
+} from '../controllers/notificationControllers.js';
 
 router.get('/', getAllNotifications);
 
 router.get('/getNotificationById', getNotificationById);
 
-router.post('/', createNotification);
+router.get('/getNotificationsByInstitute', getNotificationsByInstitute);
 
 export default router;
