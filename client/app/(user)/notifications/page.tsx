@@ -1,10 +1,13 @@
+"use client"
 import MailComponent from "@/components/shared/mail/components/mail";
-import { accounts, mails } from "@/components/shared/mail/data";
+import { type } from "os"
+
 
 export default function Notifications() {
+
   return (
     <div className="hidden flex-col md:flex">
-      <MailComponent accounts={accounts} mails={mails} />
+      <MailComponent />
     </div>
   );
 }

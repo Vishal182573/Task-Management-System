@@ -397,5 +397,28 @@ export const addComment = async (
   }
 };
 
-export const getAllNotifications = async () => {};
-export const getNotificationsByInstitute = async () => {};
+export const getAllNotifications = async () => {
+  try {
+    const response = await fetch("http://localhost:3001/api/notification");
+    const data = await response.json();
+    if(!data.ok){
+      console.log(data);
+      return data;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getNotificationsByInstitute = async (instituteName: string) => {
+  try {
+    const res = await fetch(BASE_URL + "/api/notifications/?id=" + instituteName);
+    const notifications = await res.json();
+    return notifications;
+  } catch (error: any) {
+    console.error("Error Fetching Notifcations for :"+ instituteName, error);
+    throw new Error(error); // Rethrow the error for handling in the calling code
+  }
+};
+
+// export const createNotification = async ()

@@ -26,7 +26,7 @@ import {
 import { cn } from "@/lib/utils";
 import { getTaskById } from "@/lib/api";
 import { useUserContext } from "@/global/userContext";
-import { ADMIN, OFFICER } from "@/global/constant";
+import { ADMIN, OFFICER ,LG} from "@/global/constant";
 import ConfirmationDialog from "../shared/ConfirmationDialog";
 
 export default function TaskInformation({ taskId }: { taskId: string }) {
@@ -67,6 +67,7 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
           placeholder=""
           className="rounded-sm w-[412px] col-span-3"
           value={taskInfo?.title}
+          disabled={user?.role === 'LG'}
         />
         <div className="grid grid-cols-3 items-center justify-self-end gap-y-2 gap-x-8 col-span-4">
           <Label htmlFor="assignee" className="col-span-1 font-semibold">
@@ -77,6 +78,7 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
               className={`col-span-2 ${cn(
                 buttonVariants({ variant: "outline" })
               )}`}
+              disabled={user?.role === 'LG'}
             >
               {taskInfo?.status}
             </DropdownMenuTrigger>
@@ -104,6 +106,7 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
         <Textarea
           className="resize-none h-20 w-[412px] rounded-sm  col-span-3"
           value={taskInfo.description}
+          disabled={user?.role === 'LG'}
         />
         <div className="col-span-4"></div>
         <Label

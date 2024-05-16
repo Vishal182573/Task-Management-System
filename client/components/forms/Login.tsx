@@ -10,17 +10,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserType, useUserContext } from "@/global/userContext";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "@/lib/api";
+import { Blocks } from "lucide-react";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setUser } = useUserContext();
   const router = useRouter();
+  const [loader,setLoader] = useState('hidden');
 
   const handleSubmit = async () => {
+    setLoader('block')
     const res = await login({ email, password });
 
     if (res.ok) {
@@ -39,18 +42,25 @@ const LoginForm = () => {
         setUser(userData);
 
         // TODO: do not use localstorage
-        localStorage.setItem("user", JSON.stringify(userData));
-        router.push("/dashboard");
+        setTimeout(()=>{
+          localStorage.setItem("user", JSON.stringify(userData));
+          router.push("/dashboard");
+        },2000)
       });
     } else if (res.status == 404) {
       res.json().then((data) => {
-        alert(data.message);
+        setLoader('hidden');
+        setTimeout(() => {
+          alert(data.message);
+        }, 500);
         return;
       });
     }
   };
 
   return (
+    <>
+    <div className={`${loader} absolute top-0 w-screen h-screen bg-white`}></div>
     <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle className="text-2xl">Login</CardTitle>
@@ -85,6 +95,7 @@ const LoginForm = () => {
         </Button>
       </CardFooter>
     </Card>
+    </>
   );
 };
 

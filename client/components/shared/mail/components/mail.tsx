@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { useEffect,useState } from "react";
+import { getAllNotifications } from "@/lib/api";
 import {
   AlertCircle,
   Archive,
@@ -24,22 +26,36 @@ import {
   TabsTrigger,
 } from "@/components//ui/tabs";
 import { TooltipProvider } from "@/components//ui/tooltip";
-import { useMail } from "../use-mail";
 import { MailList } from "./mail-list";
-import { Mail } from "../data";
 
-interface MailProps {
-  accounts: {
-    label: string;
-    email: string;
-    icon: React.ReactNode;
-  }[];
-  mails: Mail[];
+interface Notification {
+  id:String,
+  taskid: String,
+  title: String,
+  officer: String,
+  description: String,
+  status:String,
+  isRead:Boolean,
+  created:Date,
 }
 
-export default function MailComponent({ accounts, mails }: MailProps) {
-  const [mail] = useMail();
-
+export default function MailComponent() {
+  const [Notifications, setNotifications] = useState<Notification[]>([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch data from the backend
+        const data = await getAllNotifications();
+        
+        // Update state with fetched data
+        setNotifications(data);
+      } catch (error) {
+        console.error('Error fetching Notifications:', error);
+        // Handle error if needed
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <TooltipProvider delayDuration={0}>
       <Tabs defaultValue="all">
@@ -69,10 +85,10 @@ export default function MailComponent({ accounts, mails }: MailProps) {
         </div>
         <Separator />
         <TabsContent value="all" className="m-0">
-          <MailList items={mails} />
+          <MailList items={Notifications} />
         </TabsContent>
         <TabsContent value="unread" className="m-0">
-          <MailList items={mails.filter((item) => !item.read)} />
+          <MailList items={Notifications.filter((item) => !item.isRead)} />
         </TabsContent>
       </Tabs>
     </TooltipProvider>
