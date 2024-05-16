@@ -1,7 +1,7 @@
 "use client";
 import CreateNewTask from "@/components/forms/CreateNewTask";
 import UserAlert from "@/components/shared/UserAlert";
-import DashboardTable from "@/components/shared/Table";
+import DashboardTable from "@/components/shared/table";
 import { buttonVariants } from "@/components/ui/button";
 import { ADMIN } from "@/global/constant";
 import { useUserContext } from "@/global/userContext";

@@ -4,7 +4,8 @@ import errorHandler from "./middleware/errorHandler.js";
 import cors from "cors";
 
 import userRoutes from "./routes/userRoutes.js";
-import taskRoutes from "./routes/taskRoutes.js";
+import taskRoutes from "./routes/TaskRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 import instituteRoutes from "./routes/instituteRoutes.js";
 
 connectDb();
@@ -22,6 +23,7 @@ app.get("/api/test", (req, res) =>
 app.use("/api/user", userRoutes);
 app.use("/api/task", taskRoutes);
 app.use("/api/institute", instituteRoutes);
+app.use('/api/notification', notificationRoutes);
 
 // app.use(errorHandler);
 
