@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import taskRoutes from "./routes/TaskRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import instituteRoutes from "./routes/instituteRoutes.js";
+import commentRoutes from "./routes/commentRoutes.js";
 
 connectDb();
 const app = express();
@@ -24,6 +25,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/task", taskRoutes);
 app.use("/api/institute", instituteRoutes);
 app.use('/api/notification', notificationRoutes);
+app.use('/api/comment', commentRoutes);
 
 // app.use(errorHandler);
 
