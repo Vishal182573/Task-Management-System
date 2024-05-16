@@ -1,5 +1,5 @@
-"use client";
-import { useEffect, useState } from "react";
+'use client';
+import { useEffect, useState } from 'react';
 import {
   ColumnDef,
   flexRender,
@@ -10,7 +10,7 @@ import {
   ColumnFiltersState,
   getPaginationRowModel,
   getFilteredRowModel,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 import {
   Table,
   TableBody,
@@ -18,20 +18,29 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/table';
+import { ArrowUpDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import Link from "next/link";
-import { getAllTasks } from "@/lib/api";
-import { calculateDelay } from "@/lib/utils";
+} from '@/components/ui/select';
+import Link from 'next/link';
+import { addDays, format } from 'date-fns';
+import { DateRange } from 'react-day-picker';
+import { calculateDelay, cn } from '@/lib/utils';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { getAllTasks } from '@/lib/api';
+import { CalendarIcon } from '@radix-ui/react-icons';
 
 export type Task = {
   _id: string;
@@ -49,12 +58,12 @@ export type Task = {
 
 export const columns: ColumnDef<Task>[] = [
   {
-    accessorKey: "assignedTo",
-    header: "Institute",
+    accessorKey: 'assignedTo',
+    header: 'Institute',
   },
   {
-    accessorKey: "taskId",
-    header: "Task ID",
+    accessorKey: 'taskId',
+    header: 'Task ID',
     cell: ({ row }) => {
       return (
         <Link
@@ -67,12 +76,12 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "title",
+    accessorKey: 'title',
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Title
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -81,12 +90,12 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "status",
+    accessorKey: 'status',
     header: ({ column }) => {
       return (
         <Select
           onValueChange={(value) => {
-            if (value === "all") {
+            if (value === 'all') {
               column.setFilterValue(undefined);
             } else {
               column.setFilterValue(value);
@@ -107,12 +116,12 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "startingDate",
+    accessorKey: 'startingDate',
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Starting Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -125,12 +134,12 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "endingDate",
+    accessorKey: 'endingDate',
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Ending Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -143,8 +152,8 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "delay",
-    header: "Time Exceeded",
+    accessorKey: 'delay',
+    header: 'Time Exceeded',
   },
 ];
 
@@ -159,35 +168,114 @@ function DataTable<TData, TValue>({
 }: DashboardTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(2024, 0, 1),
+    to: new Date(),
+  });
+  const [filterDateType, setFilterDateType] = useState<
+    'starting' | 'ending' | 'none'
+  >('none');
+
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const filteredData = data.filter((task: any) => {
+    if (filterDateType === 'none' || !date?.from || !date?.to) return true;
+    const taskDate =
+      filterDateType === 'starting'
+        ? new Date(task.startingDate)
+        : new Date(task.endingDate);
+    return taskDate >= date.from && taskDate <= date.to;
+  });
 
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
+    autoResetPageIndex: false,
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
       columnFilters,
+      pagination,
     },
   });
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center py-4 justify-between">
         <Input
           placeholder="Search by institute"
           value={
-            (table.getColumn("assignedTo")?.getFilterValue() as string) ?? ""
+            (table.getColumn('assignedTo')?.getFilterValue() as string) ?? ''
           }
           onChange={(event) =>
-            table.getColumn("assignedTo")?.setFilterValue(event.target.value)
+            table.getColumn('assignedTo')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
+        <div className="flex">
+          <div className="mr-3">
+            <Select
+              onValueChange={(value) => {
+                setFilterDateType(value as 'starting' | 'ending');
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by Date" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No Filter </SelectItem>
+                <SelectItem value="starting">Starting Date</SelectItem>
+                <SelectItem value="ending">Ending Date</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="mr-3">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    'w-[300px] justify-start text-left font-normal',
+                    !date && 'text-muted-foreground'
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date?.from ? (
+                    date.to ? (
+                      <>
+                        {format(date.from, 'LLL dd, y')} -{' '}
+                        {format(date.to, 'LLL dd, y')}
+                      </>
+                    ) : (
+                      format(date.from, 'LLL dd, y')
+                    )
+                  ) : (
+                    'Pick a date'
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={date?.from}
+                  selected={date}
+                  onSelect={setDate}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -214,7 +302,7 @@ function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -278,7 +366,7 @@ const DashboardTable = () => {
       setTasks(taskWithData);
     };
     fetchData();
-  });
+  }, []);
 
   return (
     <div className="container mx-auto py-10">

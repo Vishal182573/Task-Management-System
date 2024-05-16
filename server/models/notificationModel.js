@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 const notificationSchema = new Schema({
   taskId: {
     type: String,
-    unique: true,
+    // unique: true,
   },
   title: {
     type: String,

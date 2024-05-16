@@ -212,14 +212,16 @@ const rejectRequestExtension = asyncHandler(async (req, res) => {
     taskId,
   });
   if (task) {
-    Notification.create({
+    const notification = new Notification({
       title: 'Task Extension Rejected',
       description: `Your request for extension of task ${task.taskId} has been rejected`,
       status: 'Rejected',
       type: 'Answer',
-      institute: task.assignedTo,
+      nodalOfficer: task.assignedTo,
       taskId: task.taskId,
     });
+    await notification.save();
+    return res.json(notification);
   } else {
     return res.status(404).json({ message: 'Task not found' });
   }
@@ -236,6 +238,7 @@ const requestExtension = asyncHandler(async (req, res) => {
   });
 
   if (task) {
+    // console.log(task);
     const notification = new Notification({
       title: 'Task Extension Request',
       description: `Request for extension of task ${task.taskId} by ${days} days`,
@@ -244,6 +247,7 @@ const requestExtension = asyncHandler(async (req, res) => {
       institute: task.assignedTo,
       taskId: task.taskId,
     });
+    // console.log(notification);
     await notification.save();
     return res.json(notification);
   } else {
