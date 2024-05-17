@@ -1,9 +1,9 @@
-import MailComponent from "@/components/shared/mail/components/mail";
+import NotificationsComponent from "@/components/shared/Notification/Notifications";
 
 export default function Notifications() {
   return (
     <div className="hidden flex-col md:flex">
-      <MailComponent />
+      <NotificationsComponent />
     </div>
   );
 }
