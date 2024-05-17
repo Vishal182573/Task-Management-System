@@ -12,12 +12,14 @@ import {
   loginUser,
   getCurrentUser,
   updateUser,
+  getUserByInstituteNameAndRole,
 } from "../controllers/userController.js";
 const router = Router();
 
 router.get("/", getUsers);
 router.post("/getCurrentUser", getCurrentUser); // TODO: convert into get request
 router.get("/getUserById", getUserById);
+router.get("/getOfficerByInstituteNameAndRole",getUserByInstituteNameAndRole );
 
 router.post("/", createUser);
 router.post("/login", loginUser);
