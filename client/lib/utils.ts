@@ -23,7 +23,6 @@ export function calculateDaysDifference(date1: Date, date2: Date) {
     differenceMilliseconds / (1000 * 60 * 60 * 24)
   );
 
-  console.log(daysDifference);
   return daysDifference;
 }
 

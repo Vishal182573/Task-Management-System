@@ -4,6 +4,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useUserContext } from "@/global/userContext";
 import { ScrollArea } from "../ui/scroll-area";
+import { requestDeadlineExtension } from "@/lib/api";
 
 export default function Comments({ taskId }: { taskId: string }) {
   const { user } = useUserContext();
@@ -29,6 +30,19 @@ export default function Comments({ taskId }: { taskId: string }) {
       timestamp: "10:10 AM",
     },
   ]);
+  const handleRequestHandler = async () => {
+    try {
+      const res = await requestDeadlineExtension();
+
+      if (res.message) {
+        alert(res.message);
+      } else {
+        alert("Task updated successfully!");
+      }
+    } catch (error: any) {
+      alert(error.message);
+    }
+  };
 
   const handleSendMessage = () => {
     if (newMessage.trim() !== "") {
@@ -77,7 +91,11 @@ export default function Comments({ taskId }: { taskId: string }) {
       </ScrollArea>
       <div className="mt-4 flex space-x-4">
         {user?.role !== "LG" && (
-          <Button variant="outline" className="border-primary text-primary">
+          <Button
+            variant="outline"
+            className="border-primary text-primary"
+            onClick={handleRequestHandler}
+          >
             {user?.role === "ADMIN"
               ? "Approve Deadline Extension Request"
               : "Request Deadline Extension"}

@@ -20,27 +20,27 @@ export const UserContext = createContext<UserContextType>({
 
 export const useUserContext = () => useContext(UserContext);
 
-// const t = () => {
-//   // Retrieve user data from localStorage
-//   const userDataString = localStorage.getItem("user");
+const t = () => {
+  // Retrieve user data from localStorage
+  const userDataString = localStorage.getItem("user");
 
-//   // Check if user data exists in localStorage
-//   if (userDataString !== null) {
-//     try {
-//       // Parse user data JSON string
-//       return JSON.parse(userDataString);
-//       // Use email and password variables here
-//     } catch (error) {
-//       console.error("Error parsing user data:", error);
-//       // Handle parsing error gracefully
-//     }
-//   } else {
-//     console.error("User data not found in localStorage.");
-//     // Handle missing user data gracefully
-//   }
+  // Check if user data exists in localStorage
+  if (userDataString !== null) {
+    try {
+      // Parse user data JSON string
+      return JSON.parse(userDataString);
+      // Use email and password variables here
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      // Handle parsing error gracefully
+    }
+  } else {
+    console.error("User data not found in localStorage.");
+    // Handle missing user data gracefully
+  }
 
-//   return { email: "", password: "" };
-// };
+  return { email: "", password: "" };
+};
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
@@ -48,8 +48,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // const { email } = t();
-  const email = "sharmavs9205@gmail.com";
+  const { email } = t();
   // if (email === "") router.replace("/login");
 
   // TODO: do not use localstorage
