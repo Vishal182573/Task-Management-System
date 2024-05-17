@@ -410,12 +410,35 @@ export const getAllNotifications = async () => {
 
 export const getNotificationsByInstitute = async (instituteName: string) => {
   try {
-    const res = await fetch(BASE_URL + "/api/notifications/?id=" + instituteName);
+    const res = await fetch(
+      BASE_URL + "/api/notifications/?id=" + instituteName
+    );
     const notifications = await res.json();
     return notifications;
   } catch (error: any) {
-    console.error("Error Fetching Notifcations for :"+ instituteName, error);
+    console.error("Error Fetching Notifcations for :" + instituteName, error);
     throw new Error(error); // Rethrow the error for handling in the calling code
   }
 };
 
+export const updateNotificationReadStatus = async (notificationId: string) => {
+  console.log(notificationId);
+  try {
+    const res = await fetch(
+      BASE_URL +
+        "/api/notification/updateNotificationReadStatus?notificationId=" +
+        notificationId,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return res;
+  } catch (error: any) {
+    console.error("Error Fetching Notifcations for :", error);
+    throw new Error(error); // Rethrow the error for handling in the calling code
+  }
+};

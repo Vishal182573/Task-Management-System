@@ -51,7 +51,7 @@ export interface Task {
   status: "IN-PENDING" | "COMPLETED" | "DELAYED";
 }
 
-export type UserType = {
+export interface UserType {
   userId: string;
   name: string;
   email: string;
@@ -60,12 +60,32 @@ export type UserType = {
   contact: string;
   photoGraphUri: string;
   createdAt: string;
-};
+}
 
-export type UserContextType = {
+export interface UserContextType {
   user: UserType | null;
   setUser: (user: UserType | null) => void;
   isLogged: Boolean;
   loading: Boolean;
   setIsLogged: (value: boolean) => void;
-};
+}
+
+// export interface Notification {
+//   text: string;
+//   name: string;
+//   date: Date;
+//   subject: string;
+//   enotification: string;
+// }
+
+export interface Notification {
+  _id: string;
+  taskId: String;
+  title: String;
+  description: String;
+  status: String;
+  type: String;
+  institute: String;
+  isRead: Boolean;
+  created: Date;
+}
