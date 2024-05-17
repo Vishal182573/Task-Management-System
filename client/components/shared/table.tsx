@@ -314,6 +314,7 @@ function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="text-sm"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -362,7 +363,6 @@ function DataTable<TData, TValue>({
 
 const DashboardTable = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  console.log(tasks);
   useEffect(() => {
     const fetchData = async () => {
       const data = await getAllTasks();

@@ -48,8 +48,10 @@ export interface Task {
   startingDate: Date | undefined;
   endingDate: Date | undefined;
   assignedTo: string;
-  status: "IN-PENDING" | "COMPLETED" | "DELAYED";
+  status: TaskStatus;
 }
+
+export type TaskStatus = "IN-PROGRESS" | "COMPLETED" | "DELAYED";
 
 export interface UserType {
   userId: string;
