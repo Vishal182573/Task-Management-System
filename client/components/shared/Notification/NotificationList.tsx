@@ -1,38 +1,35 @@
-import { ComponentProps } from "react";
-import formatDistanceToNow from "date-fns/formatDistanceToNow";
-
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import Link from "next/link";
+import { Notification } from "@/global/types";
+import { updateNotificationReadStatus } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
-interface Notification {
-  taskid: String,
-  title: String,
-  description: String,
-  status:String,
-  type:String,
-  institute:String,
-  isRead:Boolean,
-  created:Date,
-}
+export function NotificationList({ items }: { items: Notification[] }) {
+  const router = useRouter();
+  const handleClick = async (taskId: String, notificationId: string) => {
+    try {
+      const res = await updateNotificationReadStatus(notificationId);
 
-interface Props {
-  items: Notification[];
-}
+      if (res.ok) {
+        router.push(`/view-task/${taskId}`);
+      }
+    } catch (error) {
+      console.error("Error fetching Notifications:", error);
+      // Handle error if needed
+    }
+    // router.push(`/view-task/${taskId}`);
+  };
 
-export function MailList({ items }: Props) {
-  
   return (
     <ScrollArea className="h-screen">
       <div className="flex flex-col gap-2 p-4 pt-0">
         {items.map((item) => (
-          <Link
-            href={`/view-task/${item.taskid}`}
+          <div
             className={cn(
-              "flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent",
+              "flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent"
             )}
+            onClick={() => handleClick(item.taskId, item._id)}
           >
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center">
@@ -42,11 +39,7 @@ export function MailList({ items }: Props) {
                     <span className="flex h-2 w-2 rounded-full bg-blue-600" />
                   )}
                 </div>
-                <div
-                  className={cn(
-                    "ml-auto text-xs font-semibold",
-                  )}
-                >
+                <div className={cn("ml-auto text-xs font-semibold")}>
                   {item.institute}
                 </div>
               </div>
@@ -54,10 +47,8 @@ export function MailList({ items }: Props) {
             <div className="line-clamp-2 text-xs text-muted-foreground">
               {item.description.substring(0, 300)}
             </div>
-            <Badge className="p-1">
-               {item.type}
-            </Badge>
-          </Link>
+            <Badge className="p-1">{item.type}</Badge>
+          </div>
         ))}
       </div>
     </ScrollArea>
