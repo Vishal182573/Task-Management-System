@@ -70,6 +70,32 @@ export const getUser = async (officerId: string) => {
   }
 };
 
+export const getOfficerInfoByInstituteNameAndRole = async (instituteName: string, role?: string) => {
+  if (!instituteName) {
+    console.error('Institute name is required');
+    return;
+  }
+
+  // Constructing the URL with optional role parameter
+  let url = `${BASE_URL}/api/user/getOfficerByInstituteNameAndRole?instituteName=${encodeURIComponent(instituteName)}`;
+  if (role) {
+    url += `&role=${encodeURIComponent(role)}`;
+  }
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching officer by institute name and role:', error);
+  }
+};
+
+
 export const createUser = async (officerData: Officer) => {
   try {
     const res = await fetch(BASE_URL + "/api/user", {

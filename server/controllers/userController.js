@@ -25,6 +25,33 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   }
 });
 
+const getUserByInstituteNameAndRole = asyncHandler(async (req, res) => {
+  const { instituteName, role } = req.query;
+
+  if (!instituteName) {
+    return res.status(400).json({ message: "Institute Name is required" });
+  }
+
+  try {
+    // Constructing the query object dynamically
+    const query = { address: instituteName };
+    if (role) {
+      query.role = role; // Add role condition if provided
+    }
+
+    const user = await User.findOne(query);
+
+    if (user) {
+      return res.json(user);
+    } else {
+      return res.status(404).json({ message: `User with institute name '${instituteName}' and role '${role || "any"}' not found` });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+
 const getUserById = asyncHandler(async (req, res) => {
   // const { userId } = req.body;
   const { userId } = req.query;
@@ -248,4 +275,5 @@ export {
   loginUser,
   getCurrentUser,
   updateUser,
+  getUserByInstituteNameAndRole
 };

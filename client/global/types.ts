@@ -60,7 +60,7 @@ export interface UserType {
   role: string;
   address: string;
   contact: string;
-  photoGraphUri: string;
+  photographUri: string;
   createdAt: string;
 }
 

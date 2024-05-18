@@ -39,6 +39,26 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
     status: INPROGRESS,
     assignedTo: "",
   });
+  const [NodalofficerInfo, setNodalOfficerInfo] = useState({
+    userId: "",
+    name: "",
+    email: "",
+    role: "",
+    address: "",
+    contact: "",
+    photographUri: "",
+    createdAt: "",
+  });
+  const [ReportingofficerInfo, setReportingOfficerInfo] = useState({
+    userId: "",
+    name: "",
+    email: "",
+    role: "",
+    address: "",
+    contact: "",
+    photographUri: "",
+    createdAt: "",
+  });
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -48,6 +68,36 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
 
     fetchTask();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const officer = await getOfficerInfoByInstituteNameAndRole("IGDTU","NODAL OFFICER");
+        // Update state with fetched data
+        setNodalOfficerInfo(officer);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        // Handle error if needed
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const officer = await getOfficerInfoByInstituteNameAndRole("IGDTU","REPORTING OFFICER");
+        // Update state with fetched data
+        setReportingOfficerInfo(officer);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        // Handle error if needed
+      }
+    };
+    fetchData();
+  }, []);
+
+  const Officers: Array<UserType> = [NodalofficerInfo,ReportingofficerInfo];
 
   const HandleCancel = () => {
     setAskDelete(false);
@@ -277,7 +327,7 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
                 ) > 1
                   ? "s"
                   : ""
-              }`}
+                }`}
               placeholder=""
               className="rounded-sm w-fit col-span-1"
               disabled={true}
@@ -312,6 +362,65 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
           </Button>
         </div>
       )}
+      {Officers.map((officer) => (
+        <div className="w-full py-8 px-24 shadow-sm mt-10 border rounded-md min-h-[75px]">
+          <div className="text-xl font-bold mb-6"> {officer.role} INFORMATION</div>
+          <div className="grid grid-cols-3 gap-x-8 items-center"> 
+            <div className="col-span-2">
+              <div className="grid grid-cols-1 gap-y-4">
+                <div className="flex items-center justify-end">
+                  <Label htmlFor="name" className="font-semibold mr-4 mt-1">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Officer Name"
+                    className="rounded-sm w-full"
+                    value={officer.name}
+                    readOnly
+                  />
+                </div>
+                <div className="flex items-center justify-end">
+                  <Label htmlFor="email" className="font-semibold mr-4 mt-1">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Officer Email"
+                    className="rounded-sm w-full"
+                    value={officer.email}
+                    readOnly
+                  />
+                </div>
+                <div className="flex items-center justify-end">
+                  <Label htmlFor="contact" className="font-semibold mr-4 mt-1">
+                    Contact
+                  </Label>
+                  <Input
+                    id="contact"
+                    type="text"
+                    placeholder="Officer Contact"
+                    className="rounded-sm w-full"
+                    value={officer.contact}
+                    readOnly
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Image */}
+            <div className="col-span-1 flex justify-center items-center">
+              <img
+                src={officer.photographUri}
+                alt="Officer Photograph"
+                className="rounded-lg w-32 h-32 border-black border-[1px]"
+              />
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
