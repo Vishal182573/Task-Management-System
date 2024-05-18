@@ -20,10 +20,10 @@ export default function page() {
   // TODO: add xs breakpoint
   return (
     <div className="px-8 py-2">
-      <UserAlert
+      {/* <UserAlert
         title="Coming soon!"
         description="Alerts to users after CRUD operations"
-      />
+      /> */}
       {user?.role === ADMIN && (
         <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-6 gap-8">
           <Link href="/institute-registration" className={cn(buttonVariants())}>

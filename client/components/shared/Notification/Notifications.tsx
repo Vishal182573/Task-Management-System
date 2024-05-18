@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { getAllNotifications, getNotificationsByInstitute } from "@/lib/api";
+import { getAllNotifications, getNotificationsByUser } from "@/lib/api";
 import { Search } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -16,8 +16,8 @@ import {
 import { TooltipProvider } from "@/components//ui/tooltip";
 import { NotificationList } from "./NotificationList";
 import { useUserContext } from "@/global/userContext";
-import { OFFICER } from "@/global/constant";
 import { Notification } from "@/global/types";
+import { NODALOFFICER, REPORTINGOFFICER } from "@/global/constant";
 
 export default function NotificationsComponent() {
   const { user } = useUserContext();
@@ -28,8 +28,9 @@ export default function NotificationsComponent() {
       try {
         // Fetch data from the backend
         let data;
-        if (user?.role === OFFICER) {
-          data = await getNotificationsByInstitute(user?.address);
+        console.log(user?.role);
+        if (user?.role === NODALOFFICER || user?.role === REPORTINGOFFICER) {
+          data = await getNotificationsByUser(user.userId);
         } else {
           data = await getAllNotifications();
         }
@@ -42,7 +43,7 @@ export default function NotificationsComponent() {
       }
     };
     fetchData();
-  }, []);
+  }, [user]);
 
   return (
     <TooltipProvider delayDuration={0}>

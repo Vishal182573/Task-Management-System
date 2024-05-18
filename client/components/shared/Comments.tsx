@@ -4,7 +4,8 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useUserContext } from "@/global/userContext";
 import { ScrollArea } from "../ui/scroll-area";
-import { requestDeadlineExtension } from "@/lib/api";
+import { requestDeadlineExtension, respondDeadlineExtension } from "@/lib/api";
+import { ADMIN, LG } from "@/global/constant";
 
 export default function Comments({ taskId }: { taskId: string }) {
   const { user } = useUserContext();
@@ -13,31 +14,35 @@ export default function Comments({ taskId }: { taskId: string }) {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      sender: "Alice",
-      content: "Hey Bob, how are you?",
+      sender: "APJ",
+      content: "Sir I want to extend task Deadline!",
       timestamp: "10:00 AM",
-    },
-    {
-      id: 2,
-      sender: "Bob",
-      content: "Hi Alice! I'm good, thanks. How about you?",
-      timestamp: "10:05 AM",
     },
     {
       id: 3,
       sender: "Alice",
-      content: "I'm doing well too. Just working on some tasks.",
+      content: "There are some issues with vendor.",
       timestamp: "10:10 AM",
     },
   ]);
-  const handleRequestHandler = async () => {
-    try {
-      const res = await requestDeadlineExtension();
 
-      if (res.message) {
-        alert(res.message);
+  const handleDeadline = async (
+    type: "REQUEST" | "APPROVE" | "REJECT",
+    days?: number
+  ) => {
+    try {
+      let res;
+      if (type === "REQUEST") {
+        res = await requestDeadlineExtension(taskId, 5);
       } else {
-        alert("Task updated successfully!");
+        res = await respondDeadlineExtension(taskId, type);
+      }
+
+      if (res.ok) {
+        alert("Request Sent!");
+      } else {
+        const { message } = await res.json();
+        alert(message);
       }
     } catch (error: any) {
       alert(error.message);
@@ -90,16 +95,38 @@ export default function Comments({ taskId }: { taskId: string }) {
         ))}
       </ScrollArea>
       <div className="mt-4 flex space-x-4">
-        {user?.role !== "LG" && (
-          <Button
-            variant="outline"
-            className="border-primary text-primary"
-            onClick={handleRequestHandler}
-          >
-            {user?.role === "ADMIN"
-              ? "Approve Deadline Extension Request"
-              : "Request Deadline Extension"}
-          </Button>
+        {user?.role !== LG && (
+          <>
+            {user?.role === ADMIN ? (
+              <>
+                <Button
+                  variant="outline"
+                  className="border-primary text-primary"
+                  onClick={() => handleDeadline("APPROVE")}
+                >
+                  {" "}
+                  Approve
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-primary text-primary"
+                  onClick={() => handleDeadline("REJECT")}
+                >
+                  {" "}
+                  Reject
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="outline"
+                className="border-primary text-primary"
+                onClick={() => handleDeadline("REJECT")}
+              >
+                {" "}
+                Request Deadline Extension
+              </Button>
+            )}
+          </>
         )}
         <Input
           type="text"

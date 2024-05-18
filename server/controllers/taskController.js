@@ -2,9 +2,41 @@ import asyncHandler from "express-async-handler";
 import Institute from "../models/instituteModel.js";
 import Task from "../models/taskModel.js";
 import Notification from "../models/notificationModel.js";
+import { INPROGRESS } from "../constant.js";
 
 const getTasks = asyncHandler(async (req, res) => {
-  const tasks = await Task.find({});
+  const tasks = await Task.aggregate([
+    {
+      $lookup: {
+        from: "users", // Collection name for users
+        localField: "assignedTo",
+        foreignField: "name", // Adjust if you are looking up by name
+        as: "nodalOfficer",
+      },
+    },
+    {
+      $unwind: {
+        path: "$nodalOfficer",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        taskId: 1,
+        title: 1,
+        description: 1,
+        assignedTo: 1,
+        status: 1,
+        startingDate: 1,
+        endingDate: 1,
+        created: 1,
+        nodalOfficerName: "$nodalOfficer.name",
+      },
+    },
+  ]);
+
+  // console.log(tasks);
   return res.json(tasks);
 });
 
@@ -29,14 +61,7 @@ const createTask = asyncHandler(async (req, res) => {
   const { title, description, assignedTo, status, startingDate, endingDate } =
     req.body;
 
-  if (
-    !title ||
-    !description ||
-    !assignedTo ||
-    !status ||
-    !startingDate ||
-    !endingDate
-  ) {
+  if (!title || !description || !assignedTo || !startingDate || !endingDate) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -55,7 +80,7 @@ const createTask = asyncHandler(async (req, res) => {
     title,
     description,
     assignedTo,
-    status,
+    status: INPROGRESS,
     startingDate,
     endingDate,
   });
@@ -183,7 +208,9 @@ const updateTaskDescription = asyncHandler(async (req, res) => {
 });
 
 const approveRequestExtension = asyncHandler(async (req, res) => {
-  const { taskId, days } = req.body;
+  const { taskId } = req.body;
+
+  const days = 5;
   if (!taskId || !days) {
     return res.status(400).json({ message: "Task ID and Days are required" });
   }
@@ -200,6 +227,7 @@ const approveRequestExtension = asyncHandler(async (req, res) => {
       type: "Answer",
       nodalOfficer: task.assignedTo,
       taskId: task.taskId,
+      institute: "APJ", // TODO: remove hard coding
     });
     await notification.save();
     return res.json(updatedTask);
@@ -224,6 +252,7 @@ const rejectRequestExtension = asyncHandler(async (req, res) => {
       type: "Answer",
       nodalOfficer: task.assignedTo,
       taskId: task.taskId,
+      institute: "APJ",
     });
     await notification.save();
     return res.json(notification);

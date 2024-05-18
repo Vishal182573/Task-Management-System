@@ -2,6 +2,7 @@
 // import { redirect } from "next/navigation";
 import { LoginData, Officer, Task, TaskStatus } from "@/global/types";
 import { BASE_URL } from "./config";
+import { revalidateTag } from "next/cache";
 
 export const register = async () => {};
 
@@ -53,7 +54,7 @@ export const getCurrentUser = async (email: string) => {
 export const getUser = async (officerId: string) => {
   try {
     const res = await fetch(
-      "http://localhost:3001/api/user/getUserById?userId=" + officerId
+      BASE_URL + "/api/user/getUserById?userId=" + officerId
     );
 
     if (!res.ok) {
@@ -70,31 +71,29 @@ export const getUser = async (officerId: string) => {
   }
 };
 
-export const getOfficerInfoByInstituteNameAndRole = async (instituteName: string, role?: string) => {
-  if (!instituteName) {
-    console.error('Institute name is required');
-    return;
-  }
-
-  // Constructing the URL with optional role parameter
-  let url = `${BASE_URL}/api/user/getOfficerByInstituteNameAndRole?instituteName=${encodeURIComponent(instituteName)}`;
-  if (role) {
-    url += `&role=${encodeURIComponent(role)}`;
-  }
-
+export const getOfficerInfo = async (taskId: string, officerType: string) => {
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    const res = await fetch(
+      BASE_URL +
+        "/api/user/getOfficerByTask?role=" +
+        officerType +
+        "&taskId=" +
+        taskId
+    );
+
+    if (!res.ok) {
+      const message = await res.json();
+      console.log(message);
+      return message;
     }
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error('Error fetching officer by institute name and role:', error);
+
+    const officer = await res.json();
+    return officer;
+  } catch (error: any) {
+    console.error("Error getting officer:", error);
+    throw new Error(error); // Rethrow the error for handling in the calling code
   }
 };
-
 
 export const createUser = async (officerData: Officer) => {
   try {
@@ -281,7 +280,9 @@ export const deleteInstitute = async (
 
 export const getAllTasks = async () => {
   try {
-    const response = await fetch("http://localhost:3001/api/task");
+    const response = await fetch("http://localhost:3001/api/task", {
+      next: { tags: ["tasks"] },
+    });
     const data = await response.json();
 
     return data;
@@ -421,15 +422,15 @@ export const getAllNotifications = async () => {
   }
 };
 
-export const getNotificationsByInstitute = async (instituteName: string) => {
+export const getNotificationsByUser = async (userId: string) => {
   try {
     const res = await fetch(
-      BASE_URL + "/api/notifications/?id=" + instituteName
+      BASE_URL + "/api/notification/getNotificationsByUser?userId=" + userId
     );
     const notifications = await res.json();
     return notifications;
   } catch (error: any) {
-    console.error("Error Fetching Notifcations for :" + instituteName, error);
+    console.error("Error Fetching Notifcations for :" + userId, error);
     throw new Error(error); // Rethrow the error for handling in the calling code
   }
 };
@@ -456,31 +457,51 @@ export const updateNotificationReadStatus = async (notificationId: string) => {
   }
 };
 
-// --- not working ---
-export const requestDeadlineExtension = async (): Promise<any> => {
+export const requestDeadlineExtension = async (
+  taskId: string,
+  days: number
+) => {
   try {
-    const res = await fetch(BASE_URL + "/api/institute", {
-      method: "PUT",
-      body: JSON.stringify({}),
+    const res = await fetch(BASE_URL + "/api/task/requestExtension", {
+      method: "POST",
+      body: JSON.stringify({ taskId, days }),
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    if (!res.ok) {
-      const message = await res.json();
-      console.log(message);
-      return message;
-    }
-
-    const newInstitute = res.json();
-
-    return newInstitute;
+    return res;
   } catch (error: any) {
     console.error("Error creating institute:", error);
     throw new Error(error); // Rethrow the error for handling in the calling code
   }
 };
+
+export const respondDeadlineExtension = async (
+  taskId: string,
+  type: "APPROVE" | "REJECT"
+) => {
+  try {
+    console.log("Hi");
+    let response = "approveRequestExtension";
+
+    if (type === "REJECT") response = "rejectRequestExtension";
+
+    const res = await fetch(BASE_URL + "/api/task/" + response, {
+      method: "POST",
+      body: JSON.stringify({ taskId }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return res;
+  } catch (error: any) {
+    console.error("Error creating institute:", error);
+    throw new Error(error); // Rethrow the error for handling in the calling code
+  }
+};
+``;
 // export const addComment = async (
 //   name: string,
 //   logo: File,
