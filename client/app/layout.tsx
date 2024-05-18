@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { UserProvider } from "@/global/userContext";
-import Footer from "@/components/shared/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,10 +15,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const updateUser = (user: UserType | null) => {
-  //   setUser(user);
-  // };
-
   return (
     <html lang="en">
       <UserProvider>

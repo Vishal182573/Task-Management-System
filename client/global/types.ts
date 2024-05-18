@@ -23,6 +23,7 @@ export interface Officer {
     postalCode: string;
   };
   role?: Role;
+  photographUri?: string | "";
 }
 
 export interface LoginData {

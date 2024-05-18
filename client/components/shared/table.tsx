@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -41,6 +41,8 @@ import {
 } from "@/components/ui/popover";
 import { getAllTasks } from "@/lib/api";
 import { CalendarIcon } from "@radix-ui/react-icons";
+import { ADMIN, LG, NODALOFFICER } from "@/global/constant";
+import { useUserContext } from "@/global/userContext";
 
 export type Task = {
   _id: string;
@@ -94,6 +96,9 @@ export const columns: ColumnDef<Task>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      return <span className="pl-4">{row.original.title}</span>;
+    },
   },
   {
     accessorKey: "status",
@@ -120,6 +125,9 @@ export const columns: ColumnDef<Task>[] = [
         </Select>
       );
     },
+    cell: ({ row }) => {
+      return <span className="pl-3">{row.original.status}</span>;
+    },
   },
   {
     accessorKey: "startingDate",
@@ -137,7 +145,7 @@ export const columns: ColumnDef<Task>[] = [
     },
     cell: ({ row }) => {
       const date = new Date(row.original.startingDate);
-      return date.toLocaleDateString();
+      return <span className="pl-4">{date.toLocaleDateString()}</span>;
     },
   },
   {
@@ -155,8 +163,8 @@ export const columns: ColumnDef<Task>[] = [
       );
     },
     cell: ({ row }) => {
-      const date = new Date(row.original.endingDate);
-      return date.toLocaleDateString();
+      const date = new Date(row.original.startingDate);
+      return <span className="pl-4">{date.toLocaleDateString()}</span>;
     },
   },
   {
@@ -362,10 +370,15 @@ function DataTable<TData, TValue>({
 }
 
 const DashboardTable = () => {
+  const { user } = useUserContext();
   const [tasks, setTasks] = useState<Task[]>([]);
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getAllTasks();
+      let data = await getAllTasks();
+
+      if (user?.role !== ADMIN && user?.role !== LG) {
+        data = data.filter((item: any) => item.assignedTo === "APJ");
+      }
 
       const taskWithData = data.map((task: any) => {
         return {

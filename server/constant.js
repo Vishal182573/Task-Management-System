@@ -5,3 +5,10 @@ export const constants = {
   NOT_FOUND: 404,
   SERVER_ERROR: 500,
 };
+
+export const NODAL_OFFICER = "NODAL OFFICER";
+export const REPORTING_OFFICER = "REPORTING OFFICER";
+
+export const INPROGRESS = "IN-PROGRESS";
+export const COMPLETED = "COMPLETED";
+export const DELAYED = "DELAYED";

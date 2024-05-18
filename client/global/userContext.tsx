@@ -50,7 +50,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const { email } = t();
   // if (email === "") router.replace("/login");
-
   // TODO: do not use localstorage
   useEffect(() => {
     getCurrentUser(email)
@@ -58,6 +57,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         if (res.ok) {
           setIsLogged(true);
           res.json().then((data) => {
+            // console.log(data);
             setUser(data);
           });
         } else {

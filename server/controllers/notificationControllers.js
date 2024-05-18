@@ -23,16 +23,15 @@ const getNotificationById = asyncHandler(async (req, res) => {
   }
 });
 
-const getNotificationsByInstitute = asyncHandler(async (req, res) => {
-  // const { institute } = req.body;
-  const institute = req.query.institute;
+const getNotificationsByUser = asyncHandler(async (req, res) => {
+  const userId = req.query.userId;
 
-  if (!institute) {
-    return res.status(400).json({ message: "Institute name is required" });
+  if (!userId) {
+    return res.status(400).json({ message: "userId name is required" });
   }
 
   const instituteExists = await Institute.findOne({
-    name: institute,
+    nodalOfficer: userId,
   });
 
   if (!instituteExists) {
@@ -40,7 +39,7 @@ const getNotificationsByInstitute = asyncHandler(async (req, res) => {
   }
 
   const notifications = await Notification.find({
-    institute,
+    institute: instituteExists?.name,
   });
 
   return res.json(notifications);
@@ -73,6 +72,6 @@ const updateNotificationReadStatus = asyncHandler(async (req, res) => {
 export {
   getAllNotifications,
   getNotificationById,
-  getNotificationsByInstitute,
+  getNotificationsByUser,
   updateNotificationReadStatus,
 };

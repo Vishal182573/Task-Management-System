@@ -1,7 +1,8 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
-// import Institute from "../models/instituteModel";
-// import Task from "../models/taskModel";
+import Institute from "../models/instituteModel.js";
+import Task from "../models/taskModel.js";
+import { NODAL_OFFICER, REPORTING_OFFICER } from "../constant.js";
 
 const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find({});
@@ -25,32 +26,34 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   }
 });
 
-const getUserByInstituteNameAndRole = asyncHandler(async (req, res) => {
-  const { instituteName, role } = req.query;
+const getUserByTask = asyncHandler(async (req, res) => {
+  const { taskId, role } = req.query;
 
-  if (!instituteName) {
-    return res.status(400).json({ message: "Institute Name is required" });
+  if (!taskId) {
+    return res.status(400).json({ message: "taskId Name is required" });
   }
 
   try {
-    // Constructing the query object dynamically
-    const query = { address: instituteName };
-    if (role) {
-      query.role = role; // Add role condition if provided
-    }
+    const task = await Task.findOne({ taskId });
+    if (task) {
+      const institute = await Institute.findOne({ name: task.assignedTo });
+      const userId = "";
+      if (institute && role === NODAL_OFFICER) {
+        userId = institute.nodalOfficer;
+      } else if (institute && role === REPORTING_OFFICER) {
+        userId = institute.reportingOfficer;
+      }
 
-    const user = await User.findOne(query);
+      const user = await User.findOne({ userId: institute.nodalOfficer });
 
-    if (user) {
-      return res.json(user);
-    } else {
-      return res.status(404).json({ message: `User with institute name '${instituteName}' and role '${role || "any"}' not found` });
+      return res.status(200).json(user);
     }
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 });
-
 
 const getUserById = asyncHandler(async (req, res) => {
   // const { userId } = req.body;
@@ -275,5 +278,5 @@ export {
   loginUser,
   getCurrentUser,
   updateUser,
-  getUserByInstituteNameAndRole
+  getUserByTask,
 };
