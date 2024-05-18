@@ -1,6 +1,6 @@
 // "use server";
 // import { redirect } from "next/navigation";
-import { LoginData, Officer, Task } from "@/global/types";
+import { LoginData, Officer, Task, TaskStatus } from "@/global/types";
 import { BASE_URL } from "./config";
 
 export const register = async () => {};
@@ -249,9 +249,9 @@ export const updateInstitute = async (
       return message;
     }
 
-    const newInstitute = res.json();
+    const updatedInstitute = res.json();
 
-    return newInstitute;
+    return updatedInstitute;
   } catch (error: any) {
     console.error("Error creating institute:", error);
     throw new Error(error); // Rethrow the error for handling in the calling code
@@ -337,30 +337,64 @@ export const getTaskById = async (taskId: string) => {
   }
 };
 
-// --- not working ---
-export const updateTask = async (taskData: { taskData: Task }) => {
+export const updateTask = async (taskData: Task) => {
   try {
-    const newTask = await fetch(BASE_URL + "/api/task", {
-      method: "PUT",
+    const res = await fetch(BASE_URL + "/api/task", {
+      method: "PATCH",
       body: JSON.stringify({
-        taskData,
+        title: taskData.title,
+        taskId: taskData.taskId,
+        description: taskData.description,
+        startingDate: taskData.startingDate,
+        endingDate: taskData.endingDate,
       }),
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    if (!newTask) throw new Error("Error updating Task");
-    return newTask;
+    if (!res.ok) {
+      const message = await res.json();
+      return { message };
+    }
+
+    const updatedTask = res.json();
+
+    return { updatedTask };
   } catch (error: any) {
     console.error("Error updating Task:", error);
     throw new Error(error); // Rethrow the error for handling in the calling code
   }
 };
 
+export const updateTaskStatus = async (taskId: string, status: TaskStatus) => {
+  try {
+    const res = await fetch(BASE_URL + "/api/task/updateStatus", {
+      method: "PATCH",
+      body: JSON.stringify({
+        taskId,
+        status,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      const message = await res.json();
+      return { message };
+    }
+
+    return { updated: true };
+  } catch (error: any) {
+    console.error("Error updating Task Status:", error);
+    throw new Error(error); // Rethrow the error for handling in the calling code
+  }
+};
+
 export const deleteTask = async (taskId: string | null) => {
   try {
-    const res = await fetch(BASE_URL + "/api/institute", {
+    const res = await fetch(BASE_URL + "/api/task", {
       method: "DELETE",
       body: JSON.stringify({
         taskId,
@@ -369,56 +403,9 @@ export const deleteTask = async (taskId: string | null) => {
         "Content-Type": "application/json",
       },
     });
-
-    if (!res.ok) {
-      const message = await res.json();
-      console.log(message);
-    }
-
-    const data = await res.json();
-    console.log(data);
-    return data;
+    return res;
   } catch (error: any) {
-    console.error("Error deleting institute:", error);
-    throw new Error(error); // Rethrow the error for handling in the calling code
-  }
-};
-
-export const addComment = async (
-  name: string,
-  logo: File,
-  instituteId: string,
-  nodalOfficerData: Officer,
-  reportingOfficerData: Officer
-): Promise<any> => {
-  try {
-    console.log(nodalOfficerData, reportingOfficerData);
-    const nodalOfficerId = await updateUser(nodalOfficerData);
-    const reportingOfficerId = await updateUser(reportingOfficerData);
-
-    const res = await fetch(BASE_URL + "/api/institute", {
-      method: "PUT",
-      body: JSON.stringify({
-        name,
-        logo,
-        instituteId,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!res.ok) {
-      const message = await res.json();
-      console.log(message);
-      return message;
-    }
-
-    const newInstitute = res.json();
-
-    return newInstitute;
-  } catch (error: any) {
-    console.error("Error creating institute:", error);
+    console.error("Error deleting task:", error);
     throw new Error(error); // Rethrow the error for handling in the calling code
   }
 };
@@ -469,3 +456,62 @@ export const updateNotificationReadStatus = async (notificationId: string) => {
   }
 };
 
+// --- not working ---
+export const requestDeadlineExtension = async (): Promise<any> => {
+  try {
+    const res = await fetch(BASE_URL + "/api/institute", {
+      method: "PUT",
+      body: JSON.stringify({}),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      const message = await res.json();
+      console.log(message);
+      return message;
+    }
+
+    const newInstitute = res.json();
+
+    return newInstitute;
+  } catch (error: any) {
+    console.error("Error creating institute:", error);
+    throw new Error(error); // Rethrow the error for handling in the calling code
+  }
+};
+// export const addComment = async (
+//   name: string,
+//   logo: File,
+//   instituteId: string,
+//   nodalOfficerData: Officer,
+//   reportingOfficerData: Officer
+// ): Promise<any> => {
+//   try {
+//     const res = await fetch(BASE_URL + "/api/institute", {
+//       method: "PUT",
+//       body: JSON.stringify({
+//         name,
+//         logo,
+//         instituteId,
+//       }),
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     });
+
+//     if (!res.ok) {
+//       const message = await res.json();
+//       console.log(message);
+//       return message;
+//     }
+
+//     const newInstitute = res.json();
+
+//     return newInstitute;
+//   } catch (error: any) {
+//     console.error("Error creating institute:", error);
+//     throw new Error(error); // Rethrow the error for handling in the calling code
+//   }
+// };

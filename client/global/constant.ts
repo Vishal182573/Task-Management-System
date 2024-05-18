@@ -1,6 +1,6 @@
 export const UPDATE = "UPDATE";
 export const DELETE = "DELETE";
-export const INPENDING = "IN-PENDING";
+export const INPROGRESS = "IN-PROGRESS";
 export const COMPLETED = "COMPLETED";
 export const DELAYED = "DELAYED";
 

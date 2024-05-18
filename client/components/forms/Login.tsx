@@ -20,14 +20,17 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const { setUser } = useUserContext();
   const router = useRouter();
-  const [loader, setLoader] = useState("hidden");
 
   const handleSubmit = async () => {
-    setLoader("block");
     const res = await login({ email, password });
 
     if (res.ok) {
       res.json().then((data) => {
+        if (data.message) {
+          alert(data.message);
+          return;
+        }
+
         const userData: UserType = {
           userId: data.userId,
           name: data.name,
@@ -40,64 +43,51 @@ const LoginForm = () => {
         };
 
         setUser(userData);
-
         // TODO: do not use localstorage
-        setTimeout(() => {
-          localStorage.setItem("user", JSON.stringify(userData));
-          router.push("/dashboard");
-        }, 2000);
+        localStorage.setItem("user", JSON.stringify(userData));
+        router.push("/dashboard");
+
+        setTimeout(() => {}, 2000);
       });
     } else if (res.status == 404) {
-      res.json().then((data) => {
-        setLoader("hidden");
-        setTimeout(() => {
-          alert(data.message);
-        }, 500);
-        return;
-      });
     }
   };
 
   return (
-    <>
-      <div
-        className={`${loader} absolute top-0 w-screen h-screen bg-white`}
-      ></div>
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              required
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button className="w-full" onClick={handleSubmit}>
-            Log in
-          </Button>
-        </CardFooter>
-      </Card>
-    </>
+    <Card className="w-full max-w-sm">
+      <CardHeader>
+        <CardTitle className="text-2xl">Login</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        <div className="grid gap-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="Enter your email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            required
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Button className="w-full" onClick={handleSubmit}>
+          Log in
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 
