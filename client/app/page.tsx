@@ -10,7 +10,7 @@ export default function page() {
     if (user === null) {
       redirect("/login");
     } else {
-      redirect("/dashboard");
+      redirect("/task-management-dashboard");
     }
   }, []);
 

@@ -24,7 +24,7 @@ export function NotificationList({ items }: { items: Notification[] }) {
   return (
     <ScrollArea className="h-screen">
       <div className="flex flex-col gap-2 p-4 pt-0">
-        {items.map((item) => (
+      {Array.isArray(items) && items.map((item) => (
           <div
             className={cn(
               "flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent"

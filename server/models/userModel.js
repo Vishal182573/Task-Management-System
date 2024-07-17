@@ -29,5 +29,10 @@ const userSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  institute: {
+    type: String,
+    required: true
+  }
 });
+
 export default model("User", userSchema);
