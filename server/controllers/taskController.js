@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import Institute from "../models/instituteModel.js";
 import Task from "../models/taskModel.js";
 import Notification from "../models/notificationModel.js";
-import { INPROGRESS } from "../constant.js";
+import { COMPLETED, INPROGRESS } from "../constant.js";
 
 const getTasks = asyncHandler(async (req, res) => {
   const tasks = await Task.aggregate([
@@ -219,10 +219,12 @@ const approveRequestExtension = asyncHandler(async (req, res) => {
   });
   if (task) {
     task.endingDate.setDate(task.endingDate.getDate() + days);
+    task.request = false;
+    task.days=0;
     const updatedTask = await task.save();
     const notification = new Notification({
       title: "Task Extension Approved",
-      description: `Your request for extension of task ${task.taskId} has been approved`,
+      description: `Request for extension of task ${task.taskId} has been approved`,
       status: "Approved",
       type: "Answer",
       nodalOfficer: task.assignedTo,
@@ -245,9 +247,12 @@ const rejectRequestExtension = asyncHandler(async (req, res) => {
     taskId,
   });
   if (task) {
+    task.request = false;
+    task.days=0;
+    await task.save();
     const notification = new Notification({
       title: "Task Extension Rejected",
-      description: `Your request for extension of task ${task.taskId} has been rejected`,
+      description: `Request for extension of task ${task.taskId} has been rejected`,
       status: "Rejected",
       type: "Answer",
       nodalOfficer: task.assignedTo,
@@ -272,12 +277,107 @@ const requestExtension = asyncHandler(async (req, res) => {
   });
 
   if (task) {
-    // console.log(task);
+    task.request=true;
+    task.days=days;
+    await task.save();
     const notification = new Notification({
       title: "Task Extension Request",
       description: `Request for extension of task ${task.taskId} by ${days} days`,
       status: "Pending",
       type: "Request",
+      institute: task.assignedTo,
+      taskId: task.taskId,
+    });
+    // console.log(notification);
+    await notification.save();
+    return res.json(notification);
+  } else {
+    return res.status(404).json({ message: "Task not found" });
+  }
+});
+
+const completeTask = asyncHandler(async (req, res) => {
+  const {taskId,message} = req.body;
+  if (!taskId || !message) {
+    return res.status(400).json({ message: "Task ID and Days are required" });
+  }
+
+  const task = await Task.findOne({
+    taskId,
+  });
+
+  if (task) {
+    task.completionRequestMessage=message;
+    task.completionRequest=true;
+    await task.save();
+    await task.save();
+    const notification = new Notification({
+      title: "Task Completion Request",
+      description: `Request for completion of task ${task.taskId} `,
+      status: "Pending",
+      type: "completion",
+      institute: task.assignedTo,
+      taskId: task.taskId,
+    });
+    // console.log(notification);
+    await notification.save();
+    return res.json(notification);
+  } else {
+    return res.status(404).json({ message: "Task not found" });
+  }
+});
+
+const rejectCompletion = asyncHandler(async (req, res) => {
+  const {taskId} = req.body;
+  if (!taskId) {
+    return res.status(400).json({ message: "Task ID and Days are required" });
+  }
+
+  const task = await Task.findOne({
+    taskId,
+  });
+
+  if (task) {
+    task.completionRequestMessage="";
+    task.completionRequest=false;
+    await task.save();
+    await task.save();
+    const notification = new Notification({
+      title: "Task Completion Request Rejection",
+      description: `Request for completion of task ${task.taskId} has been rejected`,
+      status: "Pending",
+      type: "rejection",
+      institute: task.assignedTo,
+      taskId: task.taskId,
+    });
+    // console.log(notification);
+    await notification.save();
+    return res.json(notification);
+  } else {
+    return res.status(404).json({ message: "Task not found" });
+  }
+});
+
+const acceptCompletion = asyncHandler(async (req, res) => {
+  const {taskId} = req.body;
+  if (!taskId) {
+    return res.status(400).json({ message: "Task ID and Days are required" });
+  }
+  const task = await Task.findOne({
+    taskId,
+  });
+
+  if (task) {
+    task.completionRequestMessage="";
+    task.completionRequest=false;
+    task.status=COMPLETED;
+    await task.save();
+    await task.save();
+    const notification = new Notification({
+      title: "Task Completion Request Aprroval",
+      description: `Request for completion of task ${task.taskId} has been approved`,
+      status: "Pending",
+      type: "accepted",
       institute: task.assignedTo,
       taskId: task.taskId,
     });
@@ -325,5 +425,8 @@ export {
   approveRequestExtension,
   rejectRequestExtension,
   requestExtension,
+  completeTask,
+  rejectCompletion,
+  acceptCompletion,
   updateTask,
 };

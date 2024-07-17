@@ -22,6 +22,20 @@ const taskSchema = new Schema({
   endingDate: {
     type: Date,
   },
+  request:{
+    type:Boolean,
+    default:false,
+  },
+  days:{
+    type:Number,
+  },
+  completionRequest:{
+    type:Boolean,
+    default:false,
+  },
+  completionRequestMessage:{
+    type:String,
+  },
   created: {
     type: Date,
     default: Date.now,

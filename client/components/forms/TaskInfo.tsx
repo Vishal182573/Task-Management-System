@@ -287,13 +287,8 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
               className="rounded-sm w-fit col-span-1"
               disabled={true}
             />
-            {(user?.role === NODALOFFICER ||
-              user?.role === REPORTINGOFFICER) && (
-              <Button className="col-span-1">Request Deadline Extension</Button>
-            )}
           </>
         )}
-
       {user?.role === ADMIN && (
         <div className="p-2  flex space-x-10 justify-end items-center my-4 ">
           <div>
@@ -349,20 +344,16 @@ const OfficerInformation = ({
     photographUri: "",
   });
 
-  useEffect(() => {
     const fetchData = async () => {
       try {
         const officer = await getOfficerInfo(taskId, officerType);
-        // Update state with fetched data
-        console.log(officer);
         setOfficer(officer);
+        console.log(officer);
       } catch (error) {
         console.error("Error fetching user:", error);
-        // Handle error if needed
       }
     };
     fetchData();
-  }, []);
 
   return (
     <div className="w-full py-8 px-24 shadow-sm mt-10 border rounded-md min-h-[75px]">
@@ -487,11 +478,10 @@ const OfficerInformation = ({
         {/* Conditionally render the photograph if the role is Nodal Officer */}
         {officerType === "Nodal Officer" && (
           <>
-            {" "}
-            {false ? (
+            {officer?.photographUri ? (
               <div className="col-span-1 flex justify-center items-center">
                 <Image
-                  src={officer?.photographUri}
+                  src={officer.photographUri}
                   alt="Officer Photograph"
                   className="rounded-lg w-32 h-32 border-black border-[1px]"
                   width={40}
