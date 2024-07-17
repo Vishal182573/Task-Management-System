@@ -36,7 +36,8 @@ export default function NotificationsComponent() {
         }
 
         // Update state with fetched data
-        setNotifications(data);
+        const reversedNotifications = data.reverse();
+        setNotifications(reversedNotifications);
       } catch (error) {
         console.error("Error fetching Notifications:", error);
         // Handle error if needed

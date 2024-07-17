@@ -482,7 +482,6 @@ export const respondDeadlineExtension = async (
   type: "APPROVE" | "REJECT"
 ) => {
   try {
-    console.log(res);
     let response = "approveRequestExtension";
 
     if (type === "REJECT") response = "rejectRequestExtension";
@@ -528,4 +527,48 @@ export async function sendMessage(taskId: string, userId: string, name: string, 
   return response.json();
 }
 
+export async function sendCompletionRequest(taskId: string, message: string): Promise<any> {
+  const response = await fetch(`${BASE_URL}/api/task/completeTask`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ taskId, message }),
+  });
 
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to send completion request');
+  }
+  return response.json();
+}
+export async function rejectCompletion(taskId: string): Promise<any> {
+  const response = await fetch(`${BASE_URL}/api/task/rejectCompletion`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ taskId}),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to send completion request');
+  }
+  return response.json();
+}
+export async function approveCompletion(taskId: string): Promise<any> {
+  const response = await fetch(`${BASE_URL}/api/task/acceptCompletion`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ taskId}),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to send completion request');
+  }
+  return response.json();
+}
