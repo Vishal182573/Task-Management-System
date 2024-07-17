@@ -154,6 +154,9 @@ export default function Comments({ taskId }: CommentsProps) {
             </div>
           </div>
         )}
+
+        
+
         <div className="flex space-x-2">
           <Input
             type="text"

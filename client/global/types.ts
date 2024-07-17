@@ -42,15 +42,15 @@ export interface Institute {
   tasks?: string[]; // Assuming tasks is an array of strings
 }
 
-export interface Task {
-  taskId?: string;
-  title: string;
-  description: string;
-  startingDate: Date | undefined;
-  endingDate: Date | undefined;
-  assignedTo: string;
-  status: TaskStatus;
-}
+// export interface Task {
+//   taskId?: string;
+//   title: string;
+//   description: string;
+//   startingDate: Date | undefined;
+//   endingDate: Date | undefined;
+//   assignedTo: string;
+//   status: TaskStatus;
+// }
 
 export type TaskStatus = "IN-PROGRESS" | "COMPLETED" | "DELAYED";
 
@@ -61,8 +61,10 @@ export interface UserType {
   role: string;
   address: string;
   contact: string;
-  photographUri: string;
+  photoGraphUri: string;
   createdAt: string;
+  institute: string
+
 }
 
 export interface UserContextType {
@@ -92,3 +94,17 @@ export interface Notification {
   isRead: Boolean;
   created: Date;
 }
+
+export type Task = {
+  _id: string;
+  taskId: number;
+  title: string;
+  description: string;
+  status: string;
+  assignedTo: string;
+  startingDate: string;
+  endingDate: string;
+  created: string;
+  delay: string;
+  __v: number;
+};

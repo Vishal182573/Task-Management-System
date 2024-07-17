@@ -77,9 +77,9 @@ export default function NotificationsComponent() {
           <NotificationList items={notifications} />
         </TabsContent>
         <TabsContent value="unread" className="m-0">
-          <NotificationList
-            items={notifications.filter((item) => !item.isRead)}
-          />
+        <NotificationList
+          items={(Array.isArray(notifications) ? notifications : []).filter((item) => !item.isRead)}
+        />
         </TabsContent>
       </Tabs>
     </TooltipProvider>

@@ -43,20 +43,8 @@ import { getAllTasks } from "@/lib/api";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { ADMIN, LG, NODALOFFICER } from "@/global/constant";
 import { useUserContext } from "@/global/userContext";
+import { Task } from "@/global/types";
 
-export type Task = {
-  _id: string;
-  taskId: number;
-  title: string;
-  description: string;
-  status: string;
-  assignedTo: string;
-  startingDate: string;
-  endingDate: string;
-  created: string;
-  delay: string;
-  __v: number;
-};
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -119,7 +107,7 @@ export const columns: ColumnDef<Task>[] = [
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="pending">In Progress</SelectItem>
             <SelectItem value="delayed">Delayed</SelectItem>
           </SelectContent>
         </Select>
@@ -182,6 +170,7 @@ function DataTable<TData, TValue>({
   columns,
   data,
 }: DashboardTableProps<TData, TValue>) {
+  const { user } = useUserContext();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [date, setDate] = useState<DateRange | undefined>({
@@ -226,17 +215,21 @@ function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4 justify-between">
-        <Input
-          placeholder="Search by institute"
-          value={
-            (table.getColumn("assignedTo")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("assignedTo")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+      <div className={`flex items-center py-4 ${user?.role === ADMIN || user?.role === LG ? "justify-between" : "justify-end"}`}> 
+        {/* TODO: add search by title bar for admin and officers */}
+        {
+          (user?.role === ADMIN || user?.role === LG) &&
+          <Input
+            placeholder="Search by institute"
+            value={ 
+              (table.getColumn("assignedTo")?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn("assignedTo")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        }
         <div className="flex">
           <div className="mr-3">
             <Select
@@ -370,14 +363,18 @@ function DataTable<TData, TValue>({
 }
 
 const DashboardTable = () => {
-  const { user } = useUserContext();
+  const { user, loading } = useUserContext();
   const [tasks, setTasks] = useState<Task[]>([]);
+
   useEffect(() => {
+
+    if (loading) return;
+
     const fetchData = async () => {
       let data = await getAllTasks();
-
+      console.log(user)
       if (user?.role !== ADMIN && user?.role !== LG) {
-        data = data.filter((item: any) => item.assignedTo === "APJ");
+        data = data.filter((item: any) => item.assignedTo === user?.institute);
       }
 
       const taskWithData = data.map((task: any) => {
@@ -390,7 +387,11 @@ const DashboardTable = () => {
       setTasks(taskWithData);
     };
     fetchData();
-  }, []);
+  }, [user, loading]);
+
+  if (loading) {
+    return <div>Loading...</div>; // Add a loading state to handle the loading scenario
+  }
 
   return (
     <div className="container mx-auto py-10">

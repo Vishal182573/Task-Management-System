@@ -8,14 +8,14 @@ export const register = async () => {};
 
 export const login = async (loginData: LoginData) => {
   try {
-    const user = await fetch("http://localhost:3002/api/user/login", {
+    const user = await fetch(BASE_URL + "/api/user/login", {
       method: "POST",
       body: JSON.stringify(loginData),
       headers: {
         "Content-Type": "application/json",
       },
     });
-
+    
     if (!user) throw new Error("Error in Login");
 
     return user;

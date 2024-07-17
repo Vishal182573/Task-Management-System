@@ -20,6 +20,11 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const { setUser } = useUserContext();
   const router = useRouter();
+  const {user} = useUserContext();
+
+  if (user !== null) {
+    router.replace("/task-management-dashboard")
+  }
 
   const handleSubmit = async () => {
     const res = await login({ email, password });
@@ -40,12 +45,13 @@ const LoginForm = () => {
           contact: data.contact,
           photoGraphUri: data.photoGraphUri,
           createdAt: data.createdAt,
+          institute: data.institute
         };
 
         setUser(userData);
         // TODO: do not use localstorage
         localStorage.setItem("user", JSON.stringify(userData));
-        router.push("/dashboard");
+        router.replace("/task-management-dashboard");
 
         setTimeout(() => {}, 2000);
       });
