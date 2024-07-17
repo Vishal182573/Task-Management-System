@@ -8,7 +8,7 @@ export const register = async () => {};
 
 export const login = async (loginData: LoginData) => {
   try {
-    const user = await fetch("http://localhost:3001/api/user/login", {
+    const user = await fetch("http://localhost:3002/api/user/login", {
       method: "POST",
       body: JSON.stringify(loginData),
       headers: {
@@ -34,7 +34,7 @@ export const logout = async () => {
 // TODO: modify it for cookie authentication
 export const getCurrentUser = async (email: string) => {
   try {
-    const user = await fetch("http://localhost:3001/api/user/getCurrentUser", {
+    const user = await fetch("http://localhost:3002/api/user/getCurrentUser", {
       method: "POST",
       body: JSON.stringify({ email }),
       headers: {
@@ -280,7 +280,7 @@ export const deleteInstitute = async (
 
 export const getAllTasks = async () => {
   try {
-    const response = await fetch("http://localhost:3001/api/task", {
+    const response = await fetch("http://localhost:3002/api/task", {
       next: { tags: ["tasks"] },
     });
     const data = await response.json();
@@ -294,7 +294,7 @@ export const getAllTasks = async () => {
 export const getAllTasksByInstitute = async (instituteId: string) => {
   try {
     const response = await fetch(
-      "http://localhost:3001/api/task?institute=" + instituteId
+      "http://localhost:3002/api/task?institute=" + instituteId
     );
     const data = await response.json();
 
@@ -413,7 +413,7 @@ export const deleteTask = async (taskId: string | null) => {
 
 export const getAllNotifications = async () => {
   try {
-    const response = await fetch("http://localhost:3001/api/notification");
+    const response = await fetch("http://localhost:3002/api/notification");
     const data = await response.json();
     console.log(data);
     return data;
@@ -482,7 +482,7 @@ export const respondDeadlineExtension = async (
   type: "APPROVE" | "REJECT"
 ) => {
   try {
-    console.log("Hi");
+    console.log(res);
     let response = "approveRequestExtension";
 
     if (type === "REJECT") response = "rejectRequestExtension";
@@ -502,37 +502,30 @@ export const respondDeadlineExtension = async (
   }
 };
 ``;
-// export const addComment = async (
-//   name: string,
-//   logo: File,
-//   instituteId: string,
-//   nodalOfficerData: Officer,
-//   reportingOfficerData: Officer
-// ): Promise<any> => {
-//   try {
-//     const res = await fetch(BASE_URL + "/api/institute", {
-//       method: "PUT",
-//       body: JSON.stringify({
-//         name,
-//         logo,
-//         instituteId,
-//       }),
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     });
+// @/lib/api.js
+export async function getComments(taskId: string): Promise<any> {
+  const response = await fetch(`${BASE_URL}/api/comment/getComments?taskId=${taskId}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to load comments');
+  }
+  console.log(response);
+  return response.json();
+}
 
-//     if (!res.ok) {
-//       const message = await res.json();
-//       console.log(message);
-//       return message;
-//     }
+export async function sendMessage(taskId: string, userId: string, name: string, comment: string): Promise<any> {
+  const response = await fetch(`${BASE_URL}/api/comment/addComment`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ taskId, userId, name, comment }),
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to send comment');
+  }
+  return response.json();
+}
 
-//     const newInstitute = res.json();
 
-//     return newInstitute;
-//   } catch (error: any) {
-//     console.error("Error creating institute:", error);
-//     throw new Error(error); // Rethrow the error for handling in the calling code
-//   }
-// };
