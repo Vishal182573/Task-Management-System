@@ -4,8 +4,9 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useUserContext } from "@/global/userContext";
 import { ScrollArea } from "../ui/scroll-area";
-import { requestDeadlineExtension, respondDeadlineExtension, getComments, sendMessage, getTaskById } from "@/lib/api";
+import { requestDeadlineExtension, respondDeadlineExtension, getComments, sendMessage, getTaskById, sendCompletionRequest, approveCompletion, rejectCompletion } from "@/lib/api";
 import { ADMIN, LG, NODALOFFICER } from "@/global/constant";
+import SubmitReportDialog from "./SubmitReport";
 
 interface Comment {
   _id: string;
@@ -26,6 +27,7 @@ export default function Comments({ taskId }: CommentsProps) {
   const [messages, setMessages] = useState<Comment[]>([]);
   const [taskInfo, setTaskInfo] = useState<any>(null);
   const [extensionDays, setExtensionDays] = useState<number>(5);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     async function fetchComments() {
@@ -54,6 +56,7 @@ export default function Comments({ taskId }: CommentsProps) {
     try {
       let res;
       if (type === "REQUEST") {
+        console.log(extensionDays);
         res = await requestDeadlineExtension(taskId, extensionDays);
       } else {
         res = await respondDeadlineExtension(taskId, type);
@@ -80,14 +83,39 @@ export default function Comments({ taskId }: CommentsProps) {
         comment: newMessage,
         created: new Date().toISOString(),
       };
-  
+
       try {
         await sendMessage(taskId, user?.userId!, user?.name!, newMessage);
         setMessages([...messages, newMessageObj]);
         setNewMessage("");
-      } catch (error:any) {
+      } catch (error: any) {
         alert(error.message);
       }
+    }
+  };
+  const HandleSubmit = async (about: string) => {
+    try {
+      await sendCompletionRequest(taskId, about);
+      alert("Request sent");
+    } catch (error) {
+      console.error("Failed to send completion request:", error);
+    }
+    setOpen(false);
+  };
+
+  const handleCompletionResponse = async (type: "APPROVE" | "REJECT") => {
+    try {
+      let res;
+      if (type === "APPROVE") {
+        res = await approveCompletion(taskId);
+      } else {
+        res = await rejectCompletion(taskId);
+      }
+      if (res.ok) {
+        alert("request sent");
+      } 
+    } catch (error: any) {
+      alert(error.message);
     }
   };
 
@@ -113,7 +141,7 @@ export default function Comments({ taskId }: CommentsProps) {
         ))}
       </ScrollArea>
       <div className="mt-6">
-        {taskInfo && taskInfo.request && (user?.role === ADMIN ) && (
+        {taskInfo && taskInfo.request && (user?.role === ADMIN) && (
           <div className="mb-4">
             <div className="flex space-x-2">
               <Button
@@ -131,10 +159,10 @@ export default function Comments({ taskId }: CommentsProps) {
                 Reject Extension
               </Button>
             </div>
-            <div className="font-bold text-sm mr-3">{`Reqest for extension of deadline for ${taskInfo.extension} days`}</div>
+            <div className="font-bold text-sm mr-3">{`Reqest for extension of deadline for ${taskInfo?.days} days`}</div>
           </div>
         )}
-        {user?.role === NODALOFFICER && (
+        {!taskInfo?.request && user?.role === NODALOFFICER && (
           <div className="mb-4">
             <div className="flex space-x-2">
               <Input
@@ -154,10 +182,46 @@ export default function Comments({ taskId }: CommentsProps) {
             </div>
           </div>
         )}
-
-        
-
+        {user?.role === ADMIN && taskInfo?.completionRequest && (
+          <div className="mb-4 flex items-center">
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                className="border-green-500 text-green-500 hover:bg-green-50"
+                onClick={() => handleCompletionResponse("APPROVE")}
+              >
+                Mark Task as Done
+              </Button>
+              <Button
+                variant="outline"
+                className="border-red-500 text-red-500 hover:bg-red-50"
+                onClick={() => handleCompletionResponse("REJECT")}
+              >
+                Not Completed
+              </Button>
+            </div>
+            <div className="ml-6 font-semibold">Message : {taskInfo?.completionRequestMessage}</div>
+          </div>
+        )}
         <div className="flex space-x-2">
+          {user?.role === NODALOFFICER && (
+            <div className="">
+              <Button
+                variant="outline"
+                className="border-blue-500 text-gray-500 hover:bg-blue-50"
+                onClick={(e) => { setOpen(true) }}
+              >
+                Task Completed
+              </Button>
+              <SubmitReportDialog
+                open={open}
+                setOpen={setOpen}
+                HandleSubmit={HandleSubmit}
+                title="Submit Your Report"
+                description="Please enter the details of your report."
+              />
+            </div>
+          )}
           <Input
             type="text"
             className="flex-1"
