@@ -95,16 +95,17 @@ export const getOfficerInfo = async (taskId: string, officerType: string) => {
   }
 };
 
-export const createUser = async (officerData: Officer) => {
+export const createUser = async (officerData: Officer, instituteName: string, role: string) => {
+
+  console.log(officerData)
   try {
     const res = await fetch(BASE_URL + "/api/user", {
       method: "POST",
       body: JSON.stringify({
         ...officerData,
-        role: "OFFICER",
-        photograph: "",
-        workingAddress: "",
-        password: "sexyboy",
+        role,
+        institute: instituteName,
+        password: "DEFAULT",
       }),
       headers: {
         "Content-Type": "application/json",
@@ -133,7 +134,6 @@ export const updateUser = async (officerData: Officer) => {
         ...officerData,
         photograph: "",
         workingAddress: "",
-        password: "sexyboy",
       }),
       headers: {
         "Content-Type": "application/json",
@@ -186,8 +186,8 @@ export const createInstitute = async (
 ): Promise<any> => {
   try {
     console.log(nodalOfficerData, reportingOfficerData);
-    const nodalOfficerId = await createUser(nodalOfficerData);
-    const reportingOfficerId = await createUser(reportingOfficerData);
+    const nodalOfficerId = await createUser(nodalOfficerData, name, "NODAL OFFICER");
+    const reportingOfficerId = await createUser(reportingOfficerData, name, "REPORTING OFFICER");
 
     const res = await fetch(BASE_URL + "/api/institute", {
       method: "POST",
@@ -214,19 +214,18 @@ export const createInstitute = async (
     return newInstitute;
   } catch (error: any) {
     console.error("Error creating institute:", error);
-    throw new Error(error); // Rethrow the error for handling in the calling code
+    // throw new Error(error); // Rethrow the error for handling in the calling code
+    alert("Something went wrong")
   }
 };
 
 export const updateInstitute = async (
   name: string,
   logo: File,
-  instituteId: string,
   nodalOfficerData: Officer,
   reportingOfficerData: Officer
 ): Promise<any> => {
   try {
-    console.log(nodalOfficerData, reportingOfficerData);
     const nodalOfficerId = await updateUser(nodalOfficerData);
     const reportingOfficerId = await updateUser(reportingOfficerData);
 
@@ -235,7 +234,6 @@ export const updateInstitute = async (
       body: JSON.stringify({
         name,
         logo,
-        instituteId,
       }),
       headers: {
         "Content-Type": "application/json",

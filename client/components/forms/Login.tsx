@@ -60,7 +60,7 @@ const LoginForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-2xl shadow-lg">
       <CardHeader>
         <CardTitle className="text-2xl">Login</CardTitle>
       </CardHeader>
@@ -88,7 +88,10 @@ const LoginForm = () => {
           />
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex gap-2">
+        <Button className="w-full" onClick={handleSubmit} variant={"link"}>
+            Forgot Password?
+        </Button>
         <Button className="w-full" onClick={handleSubmit}>
           Log in
         </Button>

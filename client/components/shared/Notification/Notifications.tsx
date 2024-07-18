@@ -17,7 +17,7 @@ import { TooltipProvider } from "@/components//ui/tooltip";
 import { NotificationList } from "./NotificationList";
 import { useUserContext } from "@/global/userContext";
 import { Notification } from "@/global/types";
-import { NODALOFFICER, REPORTINGOFFICER } from "@/global/constant";
+import { ADMIN, LG, NODALOFFICER, REPORTINGOFFICER } from "@/global/constant";
 
 export default function NotificationsComponent() {
   const { user } = useUserContext();
@@ -36,7 +36,13 @@ export default function NotificationsComponent() {
         }
 
         // Update state with fetched data
-        const reversedNotifications = data.reverse();
+        let reversedNotifications = data.reverse();
+
+        if (user?.role !== ADMIN && user?.role !== LG) {
+          console.log(notifications, user)
+          reversedNotifications = reversedNotifications.filter(notification => notification?.institiute === user?.institute)
+        }
+
         setNotifications(reversedNotifications);
       } catch (error) {
         console.error("Error fetching Notifications:", error);
@@ -45,6 +51,7 @@ export default function NotificationsComponent() {
     };
     fetchData();
   }, [user]);
+
 
   return (
     <TooltipProvider delayDuration={0}>

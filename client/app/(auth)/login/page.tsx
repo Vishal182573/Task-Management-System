@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function page() {
   return (
-    <div className="h-screen flex-center">
+    <div className="h-[80vh] flex-center">
       <LoginForm />
     </div>
   );

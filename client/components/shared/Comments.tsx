@@ -50,7 +50,7 @@ export default function Comments({ taskId }: CommentsProps) {
 
     fetchComments();
     fetchTask();
-  }, [taskId]);
+  }, []);
 
   const handleDeadline = async (type: "REQUEST" | "APPROVE" | "REJECT") => {
     try {
@@ -93,7 +93,8 @@ export default function Comments({ taskId }: CommentsProps) {
       }
     }
   };
-  const HandleSubmit = async (about: string) => {
+  const HandleTaskCompletion = async (about: string) => {
+    console.log(about)
     try {
       await sendCompletionRequest(taskId, about);
       alert("Request sent");
@@ -183,26 +184,32 @@ export default function Comments({ taskId }: CommentsProps) {
           </div>
         )}
         {user?.role === ADMIN && taskInfo?.completionRequest && (
-          <div className="mb-4 flex items-center">
-            <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                className="border-green-500 text-green-500 hover:bg-green-50"
-                onClick={() => handleCompletionResponse("APPROVE")}
-              >
-                Mark Task as Done
-              </Button>
-              <Button
-                variant="outline"
-                className="border-red-500 text-red-500 hover:bg-red-50"
-                onClick={() => handleCompletionResponse("REJECT")}
-              >
-                Not Completed
-              </Button>
+          <div className="mb-4 flex flex-col space-y-4">
+            <div className="p-4 border rounded-md shadow-sm flex justify-between">
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Task Completion Report</h3>
+                <p>{taskInfo?.completionReport}</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  className="border-green-500 text-green-500 hover:bg-green-50"
+                  onClick={() => handleCompletionResponse("APPROVE")}
+                  >
+                  Mark Task as Done
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-red-500 text-red-500 hover:bg-red-50"
+                  onClick={() => handleCompletionResponse("REJECT")}
+                  >
+                  Not Completed
+                </Button>
+              </div>
             </div>
-            <div className="ml-6 font-semibold">Message : {taskInfo?.completionRequestMessage}</div>
           </div>
         )}
+
         <div className="flex space-x-2">
           {user?.role === NODALOFFICER && (
             <div className="">
@@ -216,9 +223,9 @@ export default function Comments({ taskId }: CommentsProps) {
               <SubmitReportDialog
                 open={open}
                 setOpen={setOpen}
-                HandleSubmit={HandleSubmit}
-                title="Submit Your Report"
-                description="Please enter the details of your report."
+                HandleSubmit={HandleTaskCompletion}
+                title="Submit Task Report"
+                description="Enter task report (if any)."
               />
             </div>
           )}

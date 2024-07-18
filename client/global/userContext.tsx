@@ -68,7 +68,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       });
   }, []);
 
-  console.log(user)
   return (
     <UserContext.Provider
       value={{

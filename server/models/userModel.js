@@ -16,13 +16,13 @@ const userSchema = new Schema({
   role: {
     type: String,
   },
-  address: {
-    type: String,
+  workingAddress: {
+    type: Object,
   },
   contact: {
     type: String,
   },
-  photographUri: {
+  photograph: {
     type: String,
   },
   created: {

@@ -5,10 +5,6 @@ import {
   createUser,
   updateAddress,
   deleteUser,
-  updateEmail,
-  updateContact,
-  updatePhotograph,
-  updateRole,
   loginUser,
   getCurrentUser,
   updateUser,
@@ -26,10 +22,6 @@ router.post("/login", loginUser);
 
 router.put("/", updateUser);
 router.put("/updateAddress", updateAddress);
-router.put("/updateEmail", updateEmail);
-router.put("/updateContact", updateContact);
-router.put("/updatePhotograph", updatePhotograph);
-router.put("/updateRole", updateRole);
 
 router.delete("/", deleteUser);
 

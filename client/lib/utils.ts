@@ -26,6 +26,14 @@ export function calculateDaysDifference(date1: Date, date2: Date) {
   return daysDifference;
 }
 
+export const calculateDelayInDays = (endingDate) => {
+  const today = new Date();
+  const end = new Date(endingDate);
+  const diffTime = today - end;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+};
+
 export function RouteNameformatter(route: string) {
   let parts: any = route.split("/")[1];
 
