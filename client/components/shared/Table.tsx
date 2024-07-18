@@ -198,7 +198,7 @@ function DataTable<TData, TValue>({
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 5,
   });
 
   const filteredData = data.filter((task: any) => {
@@ -231,9 +231,10 @@ function DataTable<TData, TValue>({
   return (
     <div>
       <div className={`flex items-center py-4 ${user?.role === ADMIN || user?.role === LG ? "justify-between" : "justify-end"}`}> 
-        {
-          (user?.role === ADMIN || user?.role === LG) &&
-          <Input
+        <div className="flex gap-10 min-w-max">
+          {
+            (user?.role === ADMIN || user?.role === LG) &&
+            <Input
             placeholder="Search by institute"
             value={ 
               (table.getColumn("assignedTo")?.getFilterValue() as string) ?? ""
@@ -241,19 +242,20 @@ function DataTable<TData, TValue>({
             onChange={(event) =>
               table.getColumn("assignedTo")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
-          />
-        }
-        <Input
-            placeholder="Search by task"
-            value={ 
-              (table.getColumn("title")?.getFilterValue() as string) ?? ""
-            }
-            onChange={(event) =>
-              table.getColumn("title")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
-          />
+            className="max-w-sm flex-1"
+            />
+          }
+          <Input
+              placeholder="Search by task"
+              value={ 
+                (table.getColumn("title")?.getFilterValue() as string) ?? ""
+              }
+              onChange={(event) =>
+                table.getColumn("title")?.setFilterValue(event.target.value)
+              }
+              className="max-w-sm flex-1"
+              />
+        </div>
         <div className="flex">
           <div className="mr-3">
             <Select
@@ -339,7 +341,7 @@ function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="text-sm"
+                  className="text-sm h-24"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -419,7 +421,7 @@ const DashboardTable = () => {
 
   console.log(tasks)
   return (
-    <div className="container mx-auto py-10">
+    <div className="mt-12">
       <DataTable columns={columns} data={tasks} />
     </div>
   );

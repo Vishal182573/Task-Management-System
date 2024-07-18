@@ -85,12 +85,14 @@ export default function Header() {
 export const MainHeader = () => (
   <section className="h-20 shadow-lg">
     <figure className="p-2 flex justify-between items-center">
+    <Link href="/task-management-dashboard">
       <Image
         src={DIGITALINDIA}
         alt="digital-india-logo"
         width="180"
         height="100"
-      />
+        />
+    </Link>
       <div className="py-2 px-8 flex justify-center items-center space-x-2">
         <Image src={DELHIGOV} alt="delhi-gov-logo" width="105" />
         <Image src={YEARS75} alt="75-years-logo" width="80" />
@@ -124,7 +126,7 @@ const AccountBox = ({ user, handleSignout, handleAccountBox }: Props) => (
         <div className="mt-2">
           <Button onClick={handleSignout}>Sign Out</Button>
         </div>
-        <Link href="account" className="">
+        <Link href="/account" className="">
           My Account
         </Link>
       </div>

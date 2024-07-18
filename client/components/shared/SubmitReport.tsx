@@ -36,6 +36,7 @@ export default function SubmitReportDialog({
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <Input
+          type="file"
           value={about}
           onChange={(e) => setAbout(e.target.value)}
         />

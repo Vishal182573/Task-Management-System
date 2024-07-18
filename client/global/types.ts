@@ -22,7 +22,6 @@ export interface Officer {
     postalCode: string;
   };
   role?: Role;
-  photographUri?: string | "";
 }
 
 export interface LoginData {
@@ -95,15 +94,15 @@ export interface Notification {
 }
 
 export type Task = {
-  _id: string;
-  taskId: number;
+  _id?: string;
+  taskId?: number;
   title: string;
   description: string;
   status: string;
   assignedTo: string;
-  startingDate: string;
-  endingDate: string;
-  created: string;
-  delay: string;
-  __v: number;
+  startingDate: Date | undefined;
+  endingDate: Date | undefined;
+  created?: string;
+  delay?: string;
+  __v?: number;
 };

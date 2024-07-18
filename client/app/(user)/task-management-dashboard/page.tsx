@@ -3,7 +3,7 @@ import CreateNewTask from "@/components/forms/CreateNewTask";
 import UserAlert from "@/components/shared/UserAlert";
 import DashboardTable from "@/components/shared/Table";
 import { buttonVariants } from "@/components/ui/button";
-import { ADMIN } from "@/global/constant";
+import { ADMIN, NODALOFFICER, REPORTINGOFFICER } from "@/global/constant";
 import { useUserContext } from "@/global/userContext";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -33,6 +33,12 @@ export default function page() {
           <CreateNewTask />
         </div>
       )}
+
+      {
+        (user?.role === NODALOFFICER || user?.role === REPORTINGOFFICER) && (
+          <h4 className="text-xl font-semibold text-primary">Tasks Assigned to <span>{user?.institute}</span></h4>
+        )
+      }
       <DashboardTable />
     </div>
   );

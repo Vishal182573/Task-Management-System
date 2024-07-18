@@ -30,9 +30,173 @@ import { Officer, Task } from "@/global/types";
 import Image from "next/image";
 import { Image as DummyProfile } from "lucide-react";
 
+const OfficerInformation = ({
+  officerType,
+  taskId,
+}: {
+  officerType: string;
+  taskId: string;
+}) => {
+  const [officer, setOfficer] = useState<Officer>({
+    name: "",
+    email: "",
+    workingAddress: {
+      address: "",
+      state: "",
+      postalCode: "",
+      city: "",
+    },
+    contact: "",
+    photograph: null,
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const officer = await getOfficerInfo(taskId, officerType);
+        setOfficer(officer);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchData();
+  }, [taskId, officerType]); // Add dependencies to run only when taskId or officerType changes
+
+  return (
+    <div className="w-full py-8 px-24 shadow-sm mt-10 border rounded-md min-h-[75px]">
+      <div className="text-xl font-bold mb-6">{officerType} Details</div>
+      <div className="grid grid-cols-3 gap-x-8 items-center">
+        <div className="col-span-2">
+          <div className="grid grid-cols-8 gap-y-4 items-center gap-x-4 justify-items-end">
+            <Label
+              htmlFor="name"
+              className="font-semibold mr-4 mt-1 col-span-1"
+            >
+              Name
+            </Label>
+            <Input
+              id="name"
+              type="text"
+              placeholder="Officer Name"
+              className="rounded-sm w-full col-span-7"
+              value={officer?.name}
+              readOnly
+            />
+            <Label
+              htmlFor="email"
+              className="font-semibold mr-4 mt-1 col-span-1"
+            >
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Officer Email"
+              className="rounded-sm w-full col-span-7"
+              value={officer?.email}
+              readOnly
+            />
+            <Label
+              htmlFor="contact"
+              className="font-semibold mr-4 mt-1 col-span-1"
+            >
+              Contact
+            </Label>
+            <Input
+              id="contact"
+              type="text"
+              placeholder="Officer Contact"
+              className="rounded-sm w-full col-span-7"
+              value={officer?.contact}
+              readOnly
+            />
+            <Label
+              htmlFor="house"
+              className="font-semibold mr-4 mt-1 col-span-1"
+            >
+              Address
+            </Label>
+            <Input
+              id="house"
+              type="text"
+              placeholder="House"
+              className="rounded-sm w-full col-span-3"
+              value={officer?.workingAddress?.address}
+              readOnly
+            />
+            <Label
+              htmlFor="city"
+              className="font-semibold mr-4 mt-1 col-span-1"
+            >
+              City
+            </Label>
+            <Input
+              id="city"
+              type="text"
+              placeholder="City"
+              className="rounded-sm w-full col-span-3"
+              value={officer?.workingAddress?.city}
+              readOnly
+            />
+            <Label
+              htmlFor="state"
+              className="font-semibold mr-4 mt-1 col-span-1"
+            >
+              State
+            </Label>
+            <Input
+              id="state"
+              type="text"
+              placeholder="State"
+              className="rounded-sm w-full col-span-3"
+              value={officer?.workingAddress?.state}
+              readOnly
+            />
+            <Label
+              htmlFor="postalCode"
+              className="font-semibold mt-1 col-span-1"
+            >
+              Postal Code
+            </Label>
+            <Input
+              id="postalCode"
+              type="text"
+              placeholder="Postal Code"
+              className="rounded-sm w-full col-span-3"
+              value={officer?.workingAddress?.postalCode}
+              readOnly
+            />
+          </div>
+        </div>
+
+        {/* Conditionally render the photograph if the role is Nodal Officer */}
+        {officerType === "Nodal Officer" && (
+          <>
+            {officer?.photograph ? (
+              <div className="col-span-1 flex justify-center items-center">
+                <Image
+                  src={officer.photograph.toString()}
+                  alt="Officer Photograph"
+                  className="rounded-lg w-32 h-32 border-black border-[1px]"
+                  width={40}
+                  height={40}
+                />
+              </div>
+            ) : (
+              <div className="col-span-1 flex justify-center items-center">
+                <DummyProfile className="rounded-lg w-32 h-32 border-black border-[1px]" />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function TaskInformation({ taskId }: { taskId: string }) {
   const { user } = useUserContext();
-  console.log(user);
   const [askDelete, setAskDelete] = useState(false);
   const [update, setUpdate] = useState(false);
   const router = useRouter();
@@ -52,7 +216,7 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
     };
 
     fetchTask();
-  }, []);
+  }, [taskId]);
 
   const HandleCancel = () => {
     setAskDelete(false);
@@ -108,7 +272,7 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
       taskInfo.taskId !== undefined
     ) {
       try {
-        const res = await updateTaskStatus(taskInfo.taskId, status);
+        const res = await updateTaskStatus(taskInfo.taskId.toString(), status);
 
         if (!res.updated) {
           alert(res?.message);
@@ -322,180 +486,3 @@ export default function TaskInformation({ taskId }: { taskId: string }) {
     </div>
   );
 }
-
-const OfficerInformation = ({
-  officerType,
-  taskId,
-}: {
-  officerType: string;
-  taskId: string;
-}) => {
-  const [officer, setOfficer] = useState<Officer>({
-    name: "",
-    email: "",
-    workingAddress: {
-      house: "",
-      street: "",
-      state: "",
-      postalCode: "",
-      city: "",
-    },
-    contact: "",
-    photographUri: "",
-  });
-
-    const fetchData = async () => {
-      try {
-        const officer = await getOfficerInfo(taskId, officerType);
-        setOfficer(officer);
-        console.log(officer);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-    fetchData();
-
-  return (
-    <div className="w-full py-8 px-24 shadow-sm mt-10 border rounded-md min-h-[75px]">
-      <div className="text-xl font-bold mb-6">{officerType} Details</div>
-      <div className="grid grid-cols-3 gap-x-8 items-center">
-        <div className="col-span-2">
-          <div className="grid grid-cols-8 gap-y-4 items-center gap-x-4 justify-items-end">
-            <Label
-              htmlFor="name"
-              className="font-semibold mr-4 mt-1 col-span-1"
-            >
-              Name
-            </Label>
-            <Input
-              id="name"
-              type="text"
-              placeholder="Officer Name"
-              className="rounded-sm w-full col-span-7"
-              value={officer?.name}
-            />
-            <Label
-              htmlFor="email"
-              className="font-semibold mr-4 mt-1 col-span-1"
-            >
-              Email
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Officer Email"
-              className="rounded-sm w-full col-span-7"
-              value={officer?.email}
-              readOnly
-            />
-            <Label
-              htmlFor="contact"
-              className="font-semibold mr-4 mt-1 col-span-1"
-            >
-              Contact
-            </Label>
-            <Input
-              id="contact"
-              type="text"
-              placeholder="Officer Contact"
-              className="rounded-sm w-full col-span-7"
-              value={officer?.contact}
-              readOnly
-            />
-            <Label
-              htmlFor="house"
-              className="font-semibold mr-4 mt-1 col-span-1"
-            >
-              House
-            </Label>
-            <Input
-              id="house"
-              type="text"
-              placeholder="House"
-              className="rounded-sm w-full col-span-3"
-              value={officer?.workingAddress?.house}
-              readOnly
-            />
-            <Label
-              htmlFor="street"
-              className="font-semibold mr-4 mt-1 col-span-1"
-            >
-              Street
-            </Label>
-            <Input
-              id="street"
-              type="text"
-              placeholder="Street"
-              className="rounded-sm w-full col-span-3"
-              value={officer?.workingAddress?.street}
-              readOnly
-            />
-            <Label
-              htmlFor="city"
-              className="font-semibold mr-4 mt-1 col-span-1"
-            >
-              City
-            </Label>
-            <Input
-              id="city"
-              type="text"
-              placeholder="City"
-              className="rounded-sm w-full col-span-3"
-              value={officer?.workingAddress?.city}
-              readOnly
-            />
-            <Label
-              htmlFor="state"
-              className="font-semibold mr-4 mt-1 col-span-1"
-            >
-              State
-            </Label>
-            <Input
-              id="state"
-              type="text"
-              placeholder="State"
-              className="rounded-sm w-full col-span-3"
-              value={officer?.workingAddress?.state}
-              readOnly
-            />
-            <Label
-              htmlFor="postalCode"
-              className="font-semibold mr-4 mt-1 col-span-1"
-            >
-              Postal Code
-            </Label>
-            <Input
-              id="postalCode"
-              type="text"
-              placeholder="Postal Code"
-              className="rounded-sm w-full col-span-3"
-              value={officer?.workingAddress?.postalCode}
-              readOnly
-            />
-          </div>
-        </div>
-
-        {/* Conditionally render the photograph if the role is Nodal Officer */}
-        {officerType === "Nodal Officer" && (
-          <>
-            {officer?.photographUri ? (
-              <div className="col-span-1 flex justify-center items-center">
-                <Image
-                  src={officer.photographUri}
-                  alt="Officer Photograph"
-                  className="rounded-lg w-32 h-32 border-black border-[1px]"
-                  width={40}
-                  height={40}
-                />
-              </div>
-            ) : (
-              <div className="col-span-1 flex justify-center items-center">
-                <DummyProfile className="rounded-lg w-32 h-32 border-black border-[1px]" />
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  );
-};
