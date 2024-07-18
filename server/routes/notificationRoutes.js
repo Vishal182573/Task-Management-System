@@ -4,7 +4,7 @@ const router = Router();
 import {
   getAllNotifications,
   getNotificationById,
-  getNotificationsByUser,
+  getNotificationsByInstitute,
   updateNotificationReadStatus,
 } from "../controllers/notificationControllers.js";
 
@@ -12,7 +12,7 @@ router.get("/", getAllNotifications);
 
 router.get("/getNotificationById", getNotificationById);
 
-router.get("/getNotificationsByUser", getNotificationsByUser);
+router.get("/getNotificationsByInstitute", getNotificationsByInstitute);
 
 router.patch("/updateNotificationReadStatus", updateNotificationReadStatus);
 export default router;

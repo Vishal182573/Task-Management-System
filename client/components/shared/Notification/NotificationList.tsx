@@ -4,13 +4,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Notification } from "@/global/types";
 import { updateNotificationReadStatus } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { useUserContext } from "@/global/userContext";
+import { NODALOFFICER, REPORTINGOFFICER } from "@/global/constant";
 
 export function NotificationList({ items }: { items: Notification[] }) {
   const router = useRouter();
+  const { user } = useUserContext();
   const handleClick = async (taskId: String, notificationId: string) => {
     try {
+      
       const res = await updateNotificationReadStatus(notificationId);
-
       if (res.ok) {
         router.push(`/view-task/${taskId}`);
       }

@@ -74,6 +74,23 @@ export default function Comments({ taskId }: CommentsProps) {
       alert(error.message);
     }
   };
+  const handleCompletionResponse = async (type: "APPROVE" | "REJECT") => {
+    try {
+      let res;
+      if (type === "APPROVE") {
+        res = await approveCompletion(taskId);
+      } else {
+        res = await rejectCompletion(taskId);
+      }
+      if (res.ok) {
+        alert("request sent");
+        const updatedTask = await getTaskById(taskId);
+        setTaskInfo(updatedTask);
+      }
+    } catch (error: any) {
+      alert(error.message);
+    }
+  };
 
   const handleSendMessage = async () => {
     if (newMessage.trim() !== "") {
@@ -104,21 +121,6 @@ export default function Comments({ taskId }: CommentsProps) {
     setOpen(false);
   };
 
-  const handleCompletionResponse = async (type: "APPROVE" | "REJECT") => {
-    try {
-      let res;
-      if (type === "APPROVE") {
-        res = await approveCompletion(taskId);
-      } else {
-        res = await rejectCompletion(taskId);
-      }
-      if (res.ok) {
-        alert("request sent");
-      } 
-    } catch (error: any) {
-      alert(error.message);
-    }
-  };
 
   return (
     <div className="w-full py-6 px-6 shadow-sm mt-8 border rounded-lg bg-white">
