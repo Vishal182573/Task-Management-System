@@ -115,15 +115,18 @@ const AccountBox = ({ user, handleSignout, handleAccountBox }: Props) => (
         <div className="text-primary">
           <h4 className="text-xl font-bold capitalize">{user?.name}</h4>
           <h5 className="text-sm text-gray-500 lowercase">{user?.email}</h5>
-          {/* <Link href="account" className="text-secondary hover:text-accent">
-            My Account
-          </Link> */}
+          
         </div>
       </div>
 
       <hr />
-      <div className="mt-2">
-        <Button onClick={handleSignout}>Sign Out</Button>
+      <div className="flex justify-between items-center gap-4">
+        <div className="mt-2">
+          <Button onClick={handleSignout}>Sign Out</Button>
+        </div>
+        <Link href="account" className="">
+          My Account
+        </Link>
       </div>
     </div>
     <div className="fixed inset-0 z-40" onClick={handleAccountBox} />

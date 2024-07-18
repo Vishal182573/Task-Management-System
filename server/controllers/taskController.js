@@ -10,14 +10,8 @@ const getTasks = asyncHandler(async (req, res) => {
       $lookup: {
         from: "users", // Collection name for users
         localField: "assignedTo",
-        foreignField: "name", // Adjust if you are looking up by name
+        foreignField: "institute", // Adjust if you are looking up by name
         as: "nodalOfficer",
-      },
-    },
-    {
-      $unwind: {
-        path: "$nodalOfficer",
-        preserveNullAndEmptyArrays: true,
       },
     },
     {
@@ -31,14 +25,21 @@ const getTasks = asyncHandler(async (req, res) => {
         startingDate: 1,
         endingDate: 1,
         created: 1,
-        nodalOfficerName: "$nodalOfficer.name",
+        nodalOfficer: "$nodalOfficer.name",
       },
     },
+    {
+      $sort: {
+        created: -1, // Sort by created date in descending order (latest first)
+      },
+    },
+
   ]);
 
   // console.log(tasks);
   return res.json(tasks);
 });
+
 
 const getTaskById = asyncHandler(async (req, res) => {
   // const { taskId } = req.body;

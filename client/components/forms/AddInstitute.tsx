@@ -28,7 +28,7 @@ function CustomInput({
   onChange,
 }: CustomInputProps) {
   return (
-    <div className="grid gap-6">
+    <div className={cn("grid gap-6", className)}>
       <div className="grid gap-3">
         <Label htmlFor={id}>{title}</Label>
         <Input
@@ -51,8 +51,7 @@ const officerInit = {
   contact: "",
   email: "",
   workingAddress: {
-    house: "",
-    street: "",
+    address: "",
     city: "",
     state: "",
     postalCode: "",
@@ -81,6 +80,8 @@ export default function AddInstitute({
         setInstituteLogo(institute.logo);
         setInstituteName(institute.name);
         const nodal = await getUser(institute.nodalOfficer);
+
+        console.log(nodal)
         setNodalOfficerData({ ...officerInit, ...nodal });
 
         const reporting = await getUser(institute.reportingOfficer);
@@ -93,20 +94,23 @@ export default function AddInstitute({
 
   const handleAction = async () => {
     // Handle adding institute with the collected data
+
+    // console.log(instituteName, instituteLogo, reportingOfficerData, nodalOfficerData)
+
     if (instituteName === "" || instituteLogo === null) {
-      return alert("institute");
+      return alert("Incomplete Institute");
     }
 
     if (
       reportingOfficerData.name === "" ||
       reportingOfficerData.contact == "" ||
       reportingOfficerData.email == ""
-      // reportingOfficerData.workingAddress.house == "" ||
-      // reportingOfficerData.workingAddress.street == "" ||
-      // reportingOfficerData.workingAddress.street == "" ||
+      // reportingOfficerData.workingAddress.address == "" ||
+      // reportingOfficerData.workingAddress.city == "" ||
+      // reportingOfficerData.workingAddress.state == "" ||
       // reportingOfficerData.workingAddress.postalCode == ""
     ) {
-      return alert("reportingOfficerData");
+      return alert("Incomplete Reporting Officer Data");
     }
 
     if (
@@ -114,12 +118,12 @@ export default function AddInstitute({
       nodalOfficerData.photograph === null ||
       nodalOfficerData.contact == "" ||
       nodalOfficerData.email == ""
-      // nodalOfficerData.workingAddress.house == "" ||
-      // nodalOfficerData.workingAddress.street == "" ||
-      // nodalOfficerData.workingAddress.street == "" ||
-      // nodalOfficerData.workingAddress.postalCode == ""
+      // reportingOfficerData.workingAddress.address == "" ||
+      // reportingOfficerData.workingAddress.city == "" ||
+      // reportingOfficerData.workingAddress.state == "" ||
+      // reportingOfficerData.workingAddress.postalCode == ""
     ) {
-      return alert("nodalOfficerData");
+      return alert("Incomplete Nodal Officer Data");
     }
 
     // setUploading(true);
@@ -129,7 +133,6 @@ export default function AddInstitute({
         res = await updateInstitute(
           instituteName,
           instituteLogo,
-          "6643ac9f514bb8b18fece2c8", // TODO
           nodalOfficerData,
           reportingOfficerData
         );
@@ -147,8 +150,8 @@ export default function AddInstitute({
     } catch (error: any) {
       alert(error.message);
     } finally {
-      setReportingOfficerData(officerInit);
-      setNodalOfficerData(officerInit);
+      // setReportingOfficerData(officerInit);
+      // setNodalOfficerData(officerInit);
       setInstituteLogo(null);
       setInstituteName("");
 
@@ -250,32 +253,19 @@ const OfficerForm: React.FC<{
           }
         />
         <span className="col-span-2 h-8 mt-4 font-semibold">
-          Working Address
+          Work Address
         </span>
         <CustomInput
-          title="House No."
-          id="house"
-          value={data?.workingAddress?.house}
+          title="Address"
+          id="address"
+          value={data?.workingAddress?.address}
           onChange={(e: { target: { value: any } }) =>
             setData({
               ...data,
-              workingAddress: { ...data.workingAddress, house: e.target.value },
+              workingAddress: { ...data.workingAddress, address: e.target.value },
             })
           }
-        />
-        <CustomInput
-          title="Street"
-          id="street"
-          value={data?.workingAddress?.street}
-          onChange={(e: { target: { value: any } }) =>
-            setData({
-              ...data,
-              workingAddress: {
-                ...data.workingAddress,
-                street: e.target.value,
-              },
-            })
-          }
+          className="col-span-2"
         />
         <CustomInput
           title="City"

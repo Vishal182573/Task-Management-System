@@ -9,8 +9,8 @@ const getInstitutes = asyncHandler(async (req, res) => {
 });
 
 const getInstituteById = asyncHandler(async (req, res) => {
-  const { name } = req.body;
-  // const { name } = req.query;
+  // const { name } = req.body;
+  const { name } = req.query;
 
   if (!name) {
     return res.status(400).json({ message: "Institute name is required" });
@@ -100,29 +100,42 @@ const assignReportingOfficer = asyncHandler(async (req, res) => {
 });
 
 const assignNodalOfficer = asyncHandler(async (req, res) => {
-  const { nodalOfficerId, instituteName } = req.body;
-  if (!nodalOfficerId || !instituteName) {
+  const { nodalOfficerId, reportingOfficerId,  name, logo} = req.body;
+  if (!nodalOfficerId || !reportingOfficerId || !name || !logo) {
     return res
       .status(400)
-      .json({ message: "Institute name and Nodal officer ID are required" });
+      .json({ message: "Institute name, logo, Nodal officer ID, Reporting officer ID are required" });
   }
 
   const institute = await Institute.findOne({
-    name: instituteName,
+    name,
   });
+
   if (institute) {
     const nodalOfficer = await User.findOne({
       userId: nodalOfficerId,
-      role: "nodal",
+      role: "NODAL OFFICER",
     });
 
     if (!nodalOfficer) {
       return res.status(400).json({ message: "Nodal officer not found" });
     }
 
+    const reportingOfficer = await User.findOne({
+      userId: reportingOfficerId,
+      role: "REPORTING OFFICER",
+    });
+
+    if (!reportingOfficer) {
+      return res.status(400).json({ message: "Reporting officer not found" });
+    }
+
     institute.nodalOfficer = nodalOfficerId;
+    institute.reportingOfficer = reportingOfficerId;
+
     const updatedInstitute = await institute.save();
     return res.json(updatedInstitute);
+
   } else {
     return res.status(404).json({ message: "Institute not found" });
   }

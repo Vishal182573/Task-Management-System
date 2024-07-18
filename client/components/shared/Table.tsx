@@ -32,7 +32,7 @@ import {
 import Link from "next/link";
 import { addDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { calculateDelay, cn } from "@/lib/utils";
+import { calculateDelay, calculateDelayInDays, cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -54,7 +54,13 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "assignedo",
     header: "Nodal Officer",
-    cell: () => <span>Rinku Singh</span>,
+    cell: ({ row }) => {
+      return (
+        <div>
+          {row.original.nodalOfficer[0]}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "taskId",
@@ -107,7 +113,7 @@ export const columns: ColumnDef<Task>[] = [
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="pending">In Progress</SelectItem>
+            <SelectItem value="in-progress">In Progress</SelectItem>
             <SelectItem value="delayed">Delayed</SelectItem>
           </SelectContent>
         </Select>
@@ -151,13 +157,22 @@ export const columns: ColumnDef<Task>[] = [
       );
     },
     cell: ({ row }) => {
-      const date = new Date(row.original.startingDate);
+      const date = new Date(row.original.endingDate);
       return <span className="pl-4">{date.toLocaleDateString()}</span>;
     },
   },
   {
     accessorKey: "delay",
     header: "Time Exceeded",
+    cell: ({ row }) => {
+
+      let delay = calculateDelayInDays(row.original.endingDate);
+
+      if (delay <= 0) {
+        delay = 0;
+      }
+      return <span className="pl-4">{delay}</span>;
+    },
   },
 ];
 
@@ -216,7 +231,6 @@ function DataTable<TData, TValue>({
   return (
     <div>
       <div className={`flex items-center py-4 ${user?.role === ADMIN || user?.role === LG ? "justify-between" : "justify-end"}`}> 
-        {/* TODO: add search by title bar for admin and officers */}
         {
           (user?.role === ADMIN || user?.role === LG) &&
           <Input
@@ -230,6 +244,16 @@ function DataTable<TData, TValue>({
             className="max-w-sm"
           />
         }
+        <Input
+            placeholder="Search by task"
+            value={ 
+              (table.getColumn("title")?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn("title")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
         <div className="flex">
           <div className="mr-3">
             <Select
@@ -393,6 +417,7 @@ const DashboardTable = () => {
     return <div>Loading...</div>; // Add a loading state to handle the loading scenario
   }
 
+  console.log(tasks)
   return (
     <div className="container mx-auto py-10">
       <DataTable columns={columns} data={tasks} />

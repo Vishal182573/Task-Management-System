@@ -88,7 +88,10 @@ const LoginForm = () => {
           />
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex gap-2">
+        <Button className="w-full" onClick={handleSubmit} variant={"link"}>
+            Forgot Password?
+        </Button>
         <Button className="w-full" onClick={handleSubmit}>
           Log in
         </Button>

@@ -65,6 +65,8 @@ const getUserById = asyncHandler(async (req, res) => {
   const user = await User.findOne({
     userId,
   });
+
+  console.log(user)
   if (user) {
     return res.json(user);
   } else {
@@ -73,14 +75,15 @@ const getUserById = asyncHandler(async (req, res) => {
 });
 
 const createUser = asyncHandler(async (req, res) => {
-  const { name, email, password, role, contact, workingAddress, photograph } =
+  const {name, photograph, contact, email, password, workingAddress, role, institute} =
     req.body;
-
-  if (!name || !email || !password || !role) {
+    
+  if (!name || !email || !password || !role || !workingAddress || !institute || !contact) {
     return res
       .status(400)
       .json({ message: "Atleast Name, Email, Password and Role are required" });
   }
+
   const userExists = await User.findOne({
     email,
   });
@@ -88,7 +91,9 @@ const createUser = asyncHandler(async (req, res) => {
   if (userExists) {
     return res.status(400).json({ message: "User already exists" });
   }
+
   const userId = `U-${Math.floor(1000 + Math.random() * 9000)}`;
+
   const user = new User({
     userId,
     name,
@@ -96,8 +101,14 @@ const createUser = asyncHandler(async (req, res) => {
     password,
     role,
     contact: contact.toString() || null,
+    institute,
+    // photograph: photograph.toString(),
+    workingAddress: workingAddress.toString()
   });
+
   const createdUser = await user.save();
+
+  console.log(createUser)
   return res.status(201).json(createdUser.userId);
 });
 
@@ -112,6 +123,7 @@ const updateUser = asyncHandler(async (req, res) => {
     password,
     photograph,
   } = req.body;
+
   if (!name || !email || !password || !role) {
     return res
       .status(400)
@@ -125,7 +137,7 @@ const updateUser = asyncHandler(async (req, res) => {
     user.name = name;
     user.email = email;
     user.contact = contact;
-    user.photographUri = photograph;
+    user.photograph = photograph;
 
     const updatedUser = await user.save();
     return res.json(updatedUser);
@@ -169,86 +181,6 @@ const deleteUser = asyncHandler(async (req, res) => {
   }
 });
 
-const updateEmail = asyncHandler(async (req, res) => {
-  const { userId, email } = req.body;
-  if (!userId || !email) {
-    return res.status(400).json({ message: "User ID and Email are required" });
-  }
-  const user = await User.findOne({
-    userId,
-  });
-  if (user) {
-    user.email = email;
-    const updatedUser = await user.save();
-    return res.json(updatedUser);
-  } else {
-    return res.status(404).json({ message: "User not found" });
-  }
-});
-
-const updateContact = asyncHandler(async (req, res) => {
-  const { userId, contact } = req.body;
-  if (!userId || !contact) {
-    return res
-      .status(400)
-      .json({ message: "User ID and Contact are required" });
-  }
-  const user = await User.findOne({
-    userId,
-  });
-  if (user) {
-    user.contact = contact;
-    const updatedUser = await user.save();
-    return res.json(updatedUser);
-  } else {
-    return res.status(404).json({ message: "User not found" });
-  }
-});
-
-const updatePhotograph = asyncHandler(async (req, res) => {
-  const { userId, photograph } = req.body;
-  if (!userId || !photograph) {
-    return res
-      .status(400)
-      .json({ message: "User ID and Photograph are required" });
-  }
-  const user = await User.findOne({
-    userId,
-  });
-  if (user) {
-    user.photographUri = photograph;
-    const updatedUser = await user.save();
-    return res.json(updatedUser);
-  } else {
-    return res.status(404).json({ message: "User not found" });
-  }
-});
-
-const updateRole = asyncHandler(async (req, res) => {
-  const { userId, role } = req.body;
-  if (!userId || !role) {
-    return res.status(400).json({ message: "User ID and Role are required" });
-  }
-  const user = await User.findOne({
-    userId,
-  });
-  if (user) {
-    if (
-      role !== "admin" ||
-      role !== "lg" ||
-      role !== "nodal" ||
-      role !== "reporting"
-    ) {
-      return res.status(400).json({ message: "Invalid Role" });
-    }
-    user.role = role;
-    const updatedUser = await user.save();
-    return res.json(updatedUser);
-  } else {
-    return res.status(404).json({ message: "User not found" });
-  }
-});
-
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -271,10 +203,6 @@ export {
   createUser,
   updateAddress,
   deleteUser,
-  updateEmail,
-  updateContact,
-  updatePhotograph,
-  updateRole,
   loginUser,
   getCurrentUser,
   updateUser,

@@ -16,8 +16,7 @@ export interface Officer {
 
   // TODO: workingAddress -> address
   workingAddress: {
-    house: string;
-    street: string;
+    address: string;
     city: string;
     state: string;
     postalCode: string;
