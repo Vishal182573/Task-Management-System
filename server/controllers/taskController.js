@@ -211,33 +211,55 @@ const updateTaskDescription = asyncHandler(async (req, res) => {
 const approveRequestExtension = asyncHandler(async (req, res) => {
   const { taskId } = req.body;
 
-  const days = 5;
-  if (!taskId || !days) {
-    return res.status(400).json({ message: "Task ID and Days are required" });
+  if (!taskId) {
+    return res.status(400).json({ message: "Task ID is required" });
   }
-  const task = await Task.findOne({
-    taskId,
-  });
-  if (task) {
-    task.endingDate.setDate(task.endingDate.getDate() + days);
-    task.request = false;
-    task.days=0;
-    const updatedTask = await task.save();
-    const notification = new Notification({
-      title: "Task Extension Approved",
-      description: `Request for extension of task ${task.taskId} has been approved`,
-      status: "Approved",
-      type: "Answer",
-      nodalOfficer: task.assignedTo,
-      taskId: task.taskId,
-      institute: "APJ", // TODO: remove hard coding
-    });
-    await notification.save();
-    return res.json(updatedTask);
-  } else {
-    return res.status(404).json({ message: "Task not found" });
+
+  try {
+    const task = await Task.findOne({ taskId });
+
+    if (task) {
+
+      // Ensure endingDate is a Date object
+      const endingDate = new Date(task.endingDate);
+
+      if (!isNaN(endingDate.getTime())) {
+        // Extend the ending date by the number of days
+        endingDate.setDate(endingDate.getDate() + task.days);
+        task.endingDate = endingDate;
+
+        // Update other task properties
+        task.request = false;
+        task.days = 0;
+
+        // Save the updated task
+        const updatedTask = await task.save();
+
+        // Create and save the notification
+        const notification = new Notification({
+          title: "Task Extension Approved",
+          description: `Request for extension of task ${task.taskId} has been approved`,
+          status: "Approved",
+          type: "Answer",
+          nodalOfficer: task.assignedTo,
+          taskId: task.taskId,
+          institute: "APJ", // TODO: remove hard coding
+        });
+        await notification.save();
+
+        return res.json(updatedTask);
+      } else {
+        return res.status(400).json({ message: "Invalid ending date format" });
+      }
+    } else {
+      return res.status(404).json({ message: "Task not found" });
+    }
+  } catch (error) {
+    console.error("Error updating task:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 const rejectRequestExtension = asyncHandler(async (req, res) => {
   const { taskId } = req.body;

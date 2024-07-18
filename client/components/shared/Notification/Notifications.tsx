@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { getAllNotifications, getNotificationsByUser } from "@/lib/api";
+import { getAllNotifications, getNotificationsByInstitute} from "@/lib/api";
 import { Search } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -28,20 +28,14 @@ export default function NotificationsComponent() {
       try {
         // Fetch data from the backend
         let data;
-        console.log(user?.role);
         if (user?.role === NODALOFFICER || user?.role === REPORTINGOFFICER) {
-          data = await getNotificationsByUser(user.userId);
+          data = await getNotificationsByInstitute(user?.institute);
         } else {
           data = await getAllNotifications();
         }
 
         // Update state with fetched data
         let reversedNotifications = data.reverse();
-
-        if (user?.role !== ADMIN && user?.role !== LG) {
-          console.log(notifications, user)
-          reversedNotifications = reversedNotifications.filter(notification => notification?.institiute === user?.institute)
-        }
 
         setNotifications(reversedNotifications);
       } catch (error) {
@@ -55,41 +49,44 @@ export default function NotificationsComponent() {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <Tabs defaultValue="all">
-        <div className="flex items-center px-4 py-2">
-          <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex-1">
-            <form>
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search" className="pl-8" />
-              </div>
-            </form>
+  <Tabs defaultValue="all" className="w-full">
+    <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="w-full sm:w-64">
+        <form>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search" 
+              className="pl-10 w-full"
+            />
           </div>
-          <TabsList className="ml-auto">
-            <TabsTrigger
-              value="all"
-              className="text-zinc-600 dark:text-zinc-200"
-            >
-              All mail
-            </TabsTrigger>
-            <TabsTrigger
-              value="unread"
-              className="text-zinc-600 dark:text-zinc-200"
-            >
-              Unread
-            </TabsTrigger>
-          </TabsList>
-        </div>
-        <Separator />
-        <TabsContent value="all" className="m-0">
-          <NotificationList items={notifications} />
-        </TabsContent>
-        <TabsContent value="unread" className="m-0">
-        <NotificationList
-          items={(Array.isArray(notifications) ? notifications : []).filter((item) => !item.isRead)}
-        />
-        </TabsContent>
-      </Tabs>
-    </TooltipProvider>
+        </form>
+      </div>
+      <TabsList className="bg-muted/50 p-1 rounded-full">
+        <TabsTrigger
+          value="all"
+          className="rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+        >
+          All mail
+        </TabsTrigger>
+        <TabsTrigger
+          value="unread"
+          className="rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+        >
+          Unread
+        </TabsTrigger>
+      </TabsList>
+    </div>
+    <Separator className="my-2" />
+    <TabsContent value="all" className="mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+      <NotificationList items={notifications} />
+    </TabsContent>
+    <TabsContent value="unread" className="mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+      <NotificationList
+        items={(Array.isArray(notifications) ? notifications : []).filter((item) => !item.isRead)}
+      />
+    </TabsContent>
+  </Tabs>
+</TooltipProvider>
   );
 }

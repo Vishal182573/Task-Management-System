@@ -420,15 +420,14 @@ export const getAllNotifications = async () => {
   }
 };
 
-export const getNotificationsByUser = async (userId: string) => {
+export const getNotificationsByInstitute = async (institute: string) => {
   try {
-    const res = await fetch(
-      BASE_URL + "/api/notification/getNotificationsByUser?userId=" + userId
+    const res = await fetch(`${BASE_URL}/api/notification/getNotificationsByInstitute/?institute=${institute}`
     );
     const notifications = await res.json();
     return notifications;
   } catch (error: any) {
-    console.error("Error Fetching Notifcations for :" + userId, error);
+    console.error("Error Fetching Notifcations for :" + institute, error);
     throw new Error(error); // Rethrow the error for handling in the calling code
   }
 };
